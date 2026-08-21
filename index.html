@@ -15,13 +15,13 @@
       --bg-gradient: radial-gradient(circle at 10% 10%, rgba(255, 71, 87, 0.12), transparent 35%),
                      radial-gradient(circle at 90% 90%, rgba(255, 165, 2, 0.10), transparent 35%),
                      #0a0c10;
-      --panel-bg: rgba(20, 24, 33, 0.82);
-      --panel-card: rgba(28, 33, 46, 0.72);
-      --panel-border: rgba(255, 255, 255, 0.08);
-      --panel-border-glow: rgba(255, 71, 87, 0.4);
+      --panel-bg: rgba(20, 24, 33, 0.85);
+      --panel-card: rgba(28, 33, 46, 0.78);
+      --panel-border: rgba(255, 255, 255, 0.09);
+      --panel-border-glow: rgba(255, 71, 87, 0.45);
       --text-main: #ffffff;
       --text-sub: #cbd5e1;
-      --text-muted: rgba(255, 255, 255, 0.52);
+      --text-muted: rgba(255, 255, 255, 0.55);
       --primary: #ff4757;
       --primary-glow: rgba(255, 71, 87, 0.45);
       --accent: #ffa502;
@@ -32,8 +32,8 @@
       --p7-color: #1e90ff;
       --p10-color: #ffa502;
       --p13-color: #ff4757;
-      --radius-lg: 24px;
-      --radius-md: 16px;
+      --radius-lg: 22px;
+      --radius-md: 14px;
       --radius-sm: 10px;
     }
 
@@ -55,7 +55,7 @@
     .app-container {
       width: 100vw;
       height: 100vh;
-      max-width: 1440px;
+      max-width: 1480px;
       background: var(--bg-gradient);
       position: relative;
       display: flex;
@@ -65,13 +65,13 @@
 
     /* ─── TOP APP BAR ─── */
     .top-bar {
-      height: 58px;
-      padding: 0 20px;
+      height: 56px;
+      padding: 0 18px;
       display: flex;
       align-items: center;
       justify-content: space-between;
       border-bottom: 1px solid var(--panel-border);
-      background: rgba(10, 12, 16, 0.88);
+      background: rgba(10, 12, 16, 0.90);
       backdrop-filter: blur(20px);
       -webkit-backdrop-filter: blur(20px);
       z-index: 100;
@@ -86,20 +86,20 @@
     }
 
     .brand-icon-wrap {
-      width: 36px;
-      height: 36px;
+      width: 34px;
+      height: 34px;
       border-radius: 10px;
       background: linear-gradient(135deg, rgba(255,71,87,0.3), rgba(255,165,2,0.3));
       border: 1px solid rgba(255,71,87,0.45);
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 20px;
+      font-size: 18px;
       box-shadow: 0 0 15px var(--primary-glow);
     }
 
     .brand-title {
-      font-size: 18px;
+      font-size: 17px;
       font-weight: 800;
       letter-spacing: 0.5px;
       background: linear-gradient(90deg, #fff, #ffd280);
@@ -122,25 +122,25 @@
       display: flex;
       gap: 6px;
       background: rgba(0, 0, 0, 0.4);
-      padding: 4px;
+      padding: 3px;
       border-radius: 99px;
       border: 1px solid var(--panel-border);
     }
 
     .nav-tab {
-      padding: 6px 16px;
+      padding: 5px 14px;
       border-radius: 99px;
       border: none;
       background: transparent;
       color: var(--text-muted);
       font-family: inherit;
-      font-size: 13px;
+      font-size: 12px;
       font-weight: 600;
       cursor: pointer;
       display: flex;
       align-items: center;
-      gap: 6px;
-      transition: all 0.25s ease;
+      gap: 5px;
+      transition: all 0.2s ease;
       text-decoration: none;
     }
 
@@ -163,14 +163,14 @@
     .top-actions {
       display: flex;
       align-items: center;
-      gap: 10px;
+      gap: 8px;
     }
 
     .btn-parse-line {
       background: rgba(6, 199, 85, 0.15);
       border: 1px solid rgba(6, 199, 85, 0.4);
       color: #2ed573;
-      padding: 6px 14px;
+      padding: 5px 12px;
       border-radius: 99px;
       font-family: inherit;
       font-size: 12px;
@@ -178,7 +178,7 @@
       cursor: pointer;
       display: flex;
       align-items: center;
-      gap: 6px;
+      gap: 5px;
       transition: all 0.2s;
     }
     .btn-parse-line:hover {
@@ -190,20 +190,20 @@
     .conn-status {
       display: flex;
       align-items: center;
-      gap: 8px;
-      font-size: 12px;
+      gap: 6px;
+      font-size: 11px;
       color: var(--text-muted);
       background: rgba(255,255,255,0.04);
       border: 1px solid var(--panel-border);
-      padding: 5px 12px;
+      padding: 5px 10px;
       border-radius: 99px;
       cursor: pointer;
       transition: 0.2s;
     }
     .conn-status:hover { border-color: rgba(255,255,255,0.2); color: #fff; }
     .pulse-dot {
-      width: 8px;
-      height: 8px;
+      width: 7px;
+      height: 7px;
       border-radius: 50%;
       background: #777;
     }
@@ -229,29 +229,29 @@
       width: 100%;
       height: 100%;
       display: none;
-      padding: 14px 18px 75px 18px;
+      padding: 12px 16px 70px 16px;
       animation: fadeIn 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
     }
     .view.active { display: grid; }
     
     #view-pos {
-      grid-template-columns: 280px 1fr 340px;
-      gap: 14px;
+      grid-template-columns: 330px 1fr 340px;
+      gap: 12px;
     }
     #view-stats {
       grid-template-columns: 1fr 1fr;
-      gap: 16px;
+      gap: 14px;
     }
 
-    @media (max-width: 1200px) {
-      #view-pos { grid-template-columns: 240px 1fr 300px; gap: 10px; padding: 10px 12px 75px; }
+    @media (max-width: 1250px) {
+      #view-pos { grid-template-columns: 290px 1fr 300px; gap: 10px; padding: 10px 12px 70px; }
       .top-bar { padding: 0 12px; }
     }
-    @media (max-width: 900px) {
+    @media (max-width: 950px) {
       body { overflow: auto; }
       .app-container { height: auto; min-height: 100vh; }
       .main-view-wrap { overflow: visible; }
-      .view { padding: 12px 10px 85px; height: auto; }
+      .view { padding: 10px 10px 80px; height: auto; }
       #view-pos { grid-template-columns: 1fr; display: flex !important; flex-direction: column; }
       #view-stats { grid-template-columns: 1fr; display: flex !important; flex-direction: column; }
       #view-pos { display: none !important; }
@@ -264,7 +264,7 @@
     .col-dash {
       display: flex;
       flex-direction: column;
-      gap: 12px;
+      gap: 10px;
       height: 100%;
       overflow: hidden;
     }
@@ -273,7 +273,7 @@
       background: var(--panel-bg);
       border: 1px solid var(--panel-border);
       border-radius: var(--radius-lg);
-      padding: 16px;
+      padding: 14px;
       display: flex;
       flex-direction: column;
       box-shadow: 0 10px 30px rgba(0,0,0,0.3);
@@ -287,7 +287,7 @@
       font-size: 14px;
       font-weight: 700;
       color: #fff;
-      margin-bottom: 12px;
+      margin-bottom: 10px;
       display: flex;
       justify-content: space-between;
       align-items: center;
@@ -298,15 +298,15 @@
       background: rgba(255,255,255,0.06);
       border: 1px solid var(--panel-border);
       color: var(--text-sub);
-      width: 30px;
-      height: 30px;
+      width: 28px;
+      height: 28px;
       border-radius: 50%;
       display: flex;
       align-items: center;
       justify-content: center;
       cursor: pointer;
       transition: all 0.2s;
-      font-size: 13px;
+      font-size: 12px;
     }
     .btn-icon:hover {
       background: rgba(255,255,255,0.15);
@@ -315,18 +315,18 @@
     }
     .btn-icon:active { transform: scale(0.95); }
 
-    /* Dashboard Summary */
+    /* Dashboard Summary Header */
     .sales-val {
-      font-size: 30px;
+      font-size: 26px;
       font-weight: 800;
       color: #fff;
       letter-spacing: -0.5px;
-      text-shadow: 0 0 25px rgba(255, 165, 2, 0.2);
+      text-shadow: 0 0 20px rgba(255, 165, 2, 0.25);
     }
     .sales-sub {
       font-size: 11px;
       color: var(--accent);
-      font-weight: 600;
+      font-weight: 700;
       text-transform: uppercase;
       letter-spacing: 1px;
       margin-bottom: 2px;
@@ -334,14 +334,14 @@
     .sales-stats-row {
       display: flex;
       gap: 6px;
-      margin-top: 6px;
-      margin-bottom: 10px;
+      margin-top: 4px;
+      margin-bottom: 8px;
     }
     .mini-stat-pill {
       background: rgba(255,255,255,0.04);
       border: 1px solid var(--panel-border);
-      border-radius: 8px;
-      padding: 4px 8px;
+      border-radius: 6px;
+      padding: 3px 8px;
       font-size: 11px;
       color: var(--text-sub);
       display: flex;
@@ -355,10 +355,10 @@
       display: flex;
       align-items: flex-end;
       justify-content: space-between;
-      height: 90px;
-      gap: 5px;
-      margin-top: 6px;
-      padding-top: 6px;
+      height: 70px;
+      gap: 4px;
+      margin-top: 4px;
+      padding-top: 4px;
       border-top: 1px solid rgba(255,255,255,0.05);
     }
     .chart-bar-wrap {
@@ -372,8 +372,8 @@
     }
     .chart-bar {
       width: 100%;
-      max-width: 18px;
-      border-radius: 5px;
+      max-width: 16px;
+      border-radius: 4px;
       background: linear-gradient(to top, var(--accent), #ff793f);
       box-shadow: 0 0 10px rgba(255, 165, 2, 0.25);
       transition: height 0.6s cubic-bezier(0.16, 1, 0.3, 1), transform 0.2s;
@@ -383,46 +383,191 @@
       background: linear-gradient(to top, var(--primary), #ff6b81);
       box-shadow: 0 0 12px var(--primary-glow);
     }
-    .chart-label { font-size: 9px; color: var(--text-muted); margin-top: 4px; font-weight: 500; }
+    .chart-label { font-size: 9px; color: var(--text-muted); margin-top: 3px; font-weight: 500; }
 
-    /* Recent Orders List */
+    /* ─── ORDERS HISTORY & REVIEW BOARD (EXPANDED & DETAILED) ─── */
+    .history-tabs-bar {
+      display: flex;
+      gap: 4px;
+      background: rgba(0, 0, 0, 0.3);
+      padding: 3px;
+      border-radius: 8px;
+      margin-bottom: 8px;
+      border: 1px solid var(--panel-border);
+    }
+    .hist-tab-btn {
+      flex: 1;
+      padding: 4px 6px;
+      border-radius: 6px;
+      border: none;
+      background: transparent;
+      color: var(--text-muted);
+      font-family: inherit;
+      font-size: 11px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: 0.2s;
+      text-align: center;
+    }
+    .hist-tab-btn.active {
+      background: rgba(255, 255, 255, 0.12);
+      color: #fff;
+      font-weight: 700;
+    }
+
+    .hist-search-box {
+      margin-bottom: 8px;
+      position: relative;
+    }
+    .hist-search-box input {
+      width: 100%;
+      background: rgba(0, 0, 0, 0.35);
+      border: 1px solid var(--panel-border);
+      border-radius: 8px;
+      padding: 6px 8px 6px 26px;
+      color: #fff;
+      font-family: inherit;
+      font-size: 11px;
+      outline: none;
+      transition: 0.2s;
+    }
+    .hist-search-box input:focus { border-color: var(--accent); }
+    .hist-search-icon {
+      position: absolute;
+      left: 8px;
+      top: 50%;
+      transform: translateY(-50%);
+      font-size: 11px;
+      color: var(--text-muted);
+      pointer-events: none;
+    }
+
     .orders-list {
       flex: 1;
       overflow-y: auto;
-      margin-right: -6px;
-      padding-right: 6px;
+      margin-right: -4px;
+      padding-right: 4px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    /* Enhanced Order Review Card */
+    .order-card {
+      background: var(--panel-card);
+      border: 1px solid var(--panel-border);
+      border-radius: var(--radius-md);
+      padding: 10px 12px;
       display: flex;
       flex-direction: column;
       gap: 6px;
-    }
-    .order-item-wrap {
-      background: var(--panel-card);
-      border: 1px solid var(--panel-border);
-      border-radius: var(--radius-sm);
       transition: all 0.2s;
-      overflow: hidden;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.25);
+      position: relative;
     }
-    .order-item-wrap:hover {
-      background: rgba(255,255,255,0.06);
-      border-color: rgba(255,255,255,0.15);
+    .order-card:hover {
+      border-color: rgba(255, 165, 2, 0.35);
+      background: rgba(35, 41, 56, 0.85);
+      transform: translateY(-1px);
     }
-    .order-item {
-      padding: 8px 10px;
+    .order-card.highlight {
+      border-left: 4px solid var(--accent);
+    }
+
+    .order-card-header {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      cursor: pointer;
     }
-    .order-id { font-size: 12px; font-weight: 600; color: #fff; }
-    .order-det { font-size: 11px; color: var(--text-muted); margin-top: 1px; }
-    .order-amt { font-size: 14px; font-weight: 700; color: var(--accent); }
-    .order-expanded-det {
-      padding: 0 10px 8px 10px;
+    .order-time-badge {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      font-size: 12px;
+      font-weight: 700;
+      color: #fff;
+    }
+    .order-date-tag {
+      font-size: 10px;
+      color: var(--text-muted);
+      background: rgba(255,255,255,0.06);
+      padding: 1px 6px;
+      border-radius: 4px;
+    }
+    .order-grand-amt {
+      font-size: 15px;
+      font-weight: 800;
+      color: var(--accent);
+      text-shadow: 0 0 10px var(--accent-glow);
+    }
+
+    .order-customer-note {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      font-size: 12px;
+      font-weight: 600;
+      color: #ffd280;
+      background: rgba(255, 165, 2, 0.1);
+      border: 1px solid rgba(255, 165, 2, 0.2);
+      border-radius: 6px;
+      padding: 3px 8px;
+    }
+
+    /* Skewer Breakdown List */
+    .order-skewer-list {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 4px;
+      margin-top: 2px;
+      margin-bottom: 2px;
+    }
+    .skewer-chip {
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 6px;
+      padding: 3px 7px;
+      font-size: 12px;
+      font-weight: 500;
+      color: #f1f5f9;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+    .skewer-chip b {
+      color: var(--accent);
+      font-weight: 800;
+      background: rgba(0,0,0,0.35);
+      padding: 1px 5px;
+      border-radius: 4px;
+    }
+
+    .order-card-actions {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-top: 4px;
+      padding-top: 4px;
+      border-top: 1px solid rgba(255,255,255,0.05);
       font-size: 11px;
+      color: var(--text-muted);
+    }
+    .btn-card-action {
+      background: rgba(255,255,255,0.05);
+      border: 1px solid var(--panel-border);
+      border-radius: 6px;
+      padding: 3px 8px;
       color: var(--text-sub);
-      display: none;
-      border-top: 1px solid rgba(255,255,255,0.04);
-      margin-top: 3px;
+      font-family: inherit;
+      font-size: 11px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: 0.2s;
+    }
+    .btn-card-action:hover {
+      background: rgba(6, 199, 85, 0.2);
+      border-color: #2ed573;
+      color: #2ed573;
     }
 
     /* ─── MENU COLUMN ─── */
@@ -502,7 +647,7 @@
     .price-tabs-bar::-webkit-scrollbar { height: 3px; }
     
     .price-tab-btn {
-      padding: 6px 14px;
+      padding: 5px 12px;
       border-radius: 99px;
       background: rgba(255,255,255,0.04);
       border: 1px solid var(--panel-border);
@@ -515,7 +660,7 @@
       transition: all 0.2s;
       display: flex;
       align-items: center;
-      gap: 6px;
+      gap: 5px;
     }
     .price-tab-btn:hover { background: rgba(255,255,255,0.08); color: #fff; }
     .price-tab-btn.active {
@@ -645,7 +790,7 @@
       display: inline-block;
     }
 
-    /* On-Card Stepper for Ultra-Fast Multiple Item Selection */
+    /* On-Card Stepper */
     .card-stepper {
       display: flex;
       align-items: center;
@@ -725,7 +870,7 @@
       background: var(--panel-bg);
       border: 1px solid var(--panel-border);
       border-radius: var(--radius-lg);
-      padding: 16px;
+      padding: 14px;
       height: 100%;
       overflow: hidden;
       box-shadow: 0 10px 30px rgba(0,0,0,0.3);
@@ -734,7 +879,7 @@
     }
 
     .cart-header {
-      font-size: 16px;
+      font-size: 15px;
       font-weight: 700;
       margin-bottom: 10px;
       display: flex;
@@ -746,8 +891,8 @@
     .cart-list {
       flex: 1;
       overflow-y: auto;
-      margin-right: -6px;
-      padding-right: 6px;
+      margin-right: -4px;
+      padding-right: 4px;
       display: flex;
       flex-direction: column;
       gap: 6px;
@@ -767,15 +912,15 @@
 
     .cart-item-info { display: flex; align-items: center; gap: 8px; }
     .cart-item-img {
-      width: 32px;
-      height: 32px;
+      width: 30px;
+      height: 30px;
       border-radius: 6px;
       background: rgba(255,255,255,0.05);
       overflow: hidden;
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 16px;
+      font-size: 15px;
       flex-shrink: 0;
     }
     .cart-item-img img { width: 100%; height: 100%; object-fit: cover; }
@@ -795,11 +940,11 @@
       background: none;
       border: none;
       color: #fff;
-      font-size: 14px;
+      font-size: 13px;
       font-weight: 700;
       cursor: pointer;
-      width: 20px;
-      height: 20px;
+      width: 18px;
+      height: 18px;
       display: flex;
       align-items: center;
       justify-content: center;
@@ -874,7 +1019,7 @@
       color: var(--text-muted);
     }
     .total-row.grand {
-      font-size: 26px;
+      font-size: 24px;
       font-weight: 800;
       color: #fff;
       margin-bottom: 10px;
@@ -892,7 +1037,7 @@
 
     .btn-copy-line {
       flex: 1;
-      padding: 14px 10px;
+      padding: 13px 8px;
       border-radius: var(--radius-md);
       border: 1px solid rgba(6, 199, 85, 0.4);
       background: rgba(6, 199, 85, 0.12);
@@ -905,13 +1050,13 @@
       display: flex;
       align-items: center;
       justify-content: center;
-      gap: 6px;
+      gap: 5px;
     }
     .btn-copy-line:hover { background: #06c755; color: #fff; box-shadow: 0 4px 15px rgba(6,199,85,0.4); }
 
     .btn-save-order {
       flex: 2;
-      padding: 14px 12px;
+      padding: 13px 10px;
       border-radius: var(--radius-md);
       border: none;
       background: linear-gradient(135deg, var(--primary), #e84118);
@@ -1244,7 +1389,7 @@
     <!-- ================= VIEW 1: POS (Order Entry) ================= -->
     <div id="view-pos" class="view active">
       
-      <!-- COLUMN 1: DASHBOARD & RECENT ORDERS -->
+      <!-- COLUMN 1: DASHBOARD & ACTIVE ORDER REVIEW BOARD -->
       <div class="col-dash">
         
         <!-- Today Sales Summary Panel -->
@@ -1268,14 +1413,31 @@
           </div>
         </div>
         
-        <!-- Recent Orders Panel -->
+        <!-- Persistent Order Review Board Panel -->
         <div class="panel" style="flex: 1; overflow: hidden;">
           <div class="panel-title">
-            <span>ออเดอร์ล่าสุดวันนี้</span>
-            <button class="btn-icon" onclick="fetchFromSheet()" data-tooltip="รีเฟรชข้อมูล"><span>↻</span></button>
+            <span style="display:flex; align-items:center; gap:6px;">
+              <span>📜 รายการออเดอร์</span>
+              <span id="history-badge" style="font-size:10px; background:rgba(255,165,2,0.15); color:var(--accent); padding:1px 6px; border-radius:99px; font-weight:700;">0</span>
+            </span>
+            <button class="btn-icon" onclick="refreshHistoryData()" data-tooltip="รีเฟรชข้อมูล"><span>↻</span></button>
           </div>
+
+          <!-- History Filter Tabs -->
+          <div class="history-tabs-bar">
+            <button class="hist-tab-btn active" id="tab-hist-today" onclick="setHistoryTab('today', this)">🌟 วันนี้</button>
+            <button class="hist-tab-btn" id="tab-hist-all" onclick="setHistoryTab('all', this)">🕒 ทั้งหมด</button>
+          </div>
+
+          <!-- Quick Search in Order History -->
+          <div class="hist-search-box">
+            <span class="hist-search-icon">🔍</span>
+            <input type="text" id="hist-search-input" placeholder="ค้นหาตามชื่อลูกค้า หรือเมนู..." oninput="renderRecentOrders()">
+          </div>
+
+          <!-- Detailed Orders List -->
           <div class="orders-list" id="recent-orders">
-            <div class="empty-msg">ยังไม่มีออเดอร์วันนี้</div>
+            <div class="empty-msg">กำลังโหลดประวัติออเดอร์...</div>
           </div>
         </div>
 
@@ -1314,7 +1476,7 @@
       <div class="col-cart">
         <div class="cart-header">
           <div style="display:flex; align-items:center; gap:8px;">
-            <span>รายการออเดอร์</span>
+            <span>รายการออเดอร์ปัจจุบัน</span>
             <span class="menu-count-badge" id="cart-item-count" style="font-size:11px; background:rgba(255,255,255,0.08); padding:2px 8px; border-radius:99px; color:var(--text-sub);">0 รายการ</span>
           </div>
           <button class="btn-icon" onclick="clearCart()" data-tooltip="ล้างตะกร้า"><span>🗑️</span></button>
@@ -1329,7 +1491,7 @@
           </div>
         </div>
         
-        <!-- Cart Totals & Fast Submit -->
+        <!-- Cart Totals & Fast Actions -->
         <div class="cart-totals">
           
           <!-- Quick Note Suggestion Chips -->
@@ -1582,7 +1744,8 @@ const MENU = [
 let cart = {}; // { id: qty }
 let customCartItems = []; // [{ id, name, price, qty }]
 let currentPriceFilter = 'all'; // 'all', '6', '7', '10', '13'
-let log = [];
+let currentHistTab = 'today'; // 'today' or 'all'
+let allOrders = []; // Persistent order records merged from local + server
 let summaryData = [];
 let menuSummary = [];
 let costRounds = [];
@@ -1599,6 +1762,7 @@ const chartColors = [
 /* ─── INITIALIZATION ─── */
 function init() {
   loadConfig();
+  loadLocalHistory();
   renderGroupedMenu();
   renderEmptyChart();
   
@@ -1995,14 +2159,12 @@ function parseAndAddLineText() {
   let matchedCount = 0;
   let detectedNotes = [];
 
-  // Common spicy / note keywords
   const noteKeywords = ['เผ็ดน้อย', 'เผ็ดกลาง', 'เผ็ดมาก', 'ไม่เผ็ด', 'พริกน้อย', 'พริกมาก', 'แยกพริก', 'ใส่ถุง', 'กลับบ้าน'];
 
   lines.forEach(line => {
     let clean = line.trim();
     if (!clean) return;
 
-    // Check if line is a note
     let isNoteOnly = false;
     for (let kw of noteKeywords) {
       if (clean.includes(kw)) {
@@ -2011,20 +2173,16 @@ function parseAndAddLineText() {
       }
     }
 
-    // Try to match menu items
     let matchedItem = null;
     let qty = 1;
 
-    // Extract numbers if present e.g. "หมูสามชั้น 3" or "หมู 3 ไม้" or "3 หมูสามชั้น"
     const numMatch = clean.match(/(\d+)/);
     if (numMatch) {
       qty = parseInt(numMatch[1]);
     }
 
-    // Match against MENU names or aliases
     for (let m of MENU) {
       const name = m.id;
-      // Also match partial aliases
       const aliases = [name];
       if (name === 'หมูสามชั้น') aliases.push('สามชั้น', 'หมู');
       if (name === 'ไส้กรอกแดง') aliases.push('ไส้กรอกนม', 'ไส้กรอก');
@@ -2110,6 +2268,209 @@ function copyOrderForLine() {
   });
 }
 
+function copySingleOrderToLine(idx) {
+  const order = allOrders[idx];
+  if (!order) return;
+
+  let text = `🔥 [สรุปออเดอร์หม่าล่าทอด] 🔥\n`;
+  text += `🕒 เวลา: ${order.time || '-'}\n`;
+  if (order.itemsDetail) {
+    const items = order.itemsDetail.split(',');
+    items.forEach(it => {
+      text += `🍢 ${it.trim()}\n`;
+    });
+  }
+  text += `--------------------------\n`;
+  text += `🍢 จำนวนไม้: ${order.sticks} ไม้\n`;
+  text += `💰 ยอดโอน: ฿${Number(order.amount).toLocaleString()}\n`;
+  if (order.note) text += `💬 หมายเหตุ: ${order.note}\n`;
+  text += `--------------------------\n`;
+  text += `ขอบคุณมากค่ะ ✨`;
+
+  navigator.clipboard.writeText(text).then(() => {
+    playHaptic('success');
+    toast('📋 คัดลอกสรุปออเดอร์นี้เรียบร้อย!');
+  }).catch(() => {
+    toast('❌ คัดลอกไม่สำเร็จ');
+  });
+}
+
+function reorderToCart(idx) {
+  const order = allOrders[idx];
+  if (!order) return;
+
+  playHaptic('click');
+  clearCart();
+
+  if (order.itemsJson) {
+    try {
+      const parsed = JSON.parse(order.itemsJson);
+      parsed.forEach(it => {
+        const found = MENU.find(m => m.id === it.name);
+        if (found) {
+          cart[found.id] = (cart[found.id] || 0) + it.qty;
+        } else {
+          customCartItems.push({ name: it.name, price: it.price, qty: it.qty });
+        }
+      });
+    } catch(e){}
+  } else if (order.itemsDetail) {
+    // Parse "หมูสามชั้น×3, เต้าหู้ชีส×2"
+    const parts = order.itemsDetail.split(',');
+    parts.forEach(p => {
+      const match = p.trim().match(/(.+?)\s*[×x*]\s*(\d+)/);
+      if (match) {
+        const name = match[1].trim();
+        const qty = parseInt(match[2]);
+        const found = MENU.find(m => m.id === name);
+        if (found) cart[found.id] = (cart[found.id] || 0) + qty;
+      }
+    });
+  }
+
+  if (order.note) document.getElementById('f-note').value = order.note;
+  updateCartUI();
+  toast('🔄 โหลดออเดอร์นี้ลงตะกร้าแล้ว');
+}
+
+/* ─── PERSISTENT ORDER HISTORY MANAGEMENT ─── */
+function loadLocalHistory() {
+  try {
+    const saved = localStorage.getItem('mala_persistent_orders');
+    if (saved) {
+      allOrders = JSON.parse(saved);
+    } else {
+      const legacy = localStorage.getItem('mala_local_orders');
+      if (legacy) allOrders = JSON.parse(legacy);
+    }
+  } catch(e) {
+    allOrders = [];
+  }
+  renderRecentOrders();
+  updateDashboardSummary();
+}
+
+function saveLocalHistory() {
+  try {
+    if (allOrders.length > 500) allOrders = allOrders.slice(0, 500);
+    localStorage.setItem('mala_persistent_orders', JSON.stringify(allOrders));
+  } catch(e) {}
+}
+
+function setHistoryTab(tab, el) {
+  playHaptic('tap');
+  currentHistTab = tab;
+  document.querySelectorAll('.hist-tab-btn').forEach(b => b.classList.remove('active'));
+  if (el) el.classList.add('active');
+  renderRecentOrders();
+}
+
+function renderRecentOrders() {
+  const list = document.getElementById('recent-orders');
+  const searchQ = (document.getElementById('hist-search-input')?.value || '').trim().toLowerCase();
+  const todayStr = getDateStr();
+
+  let filtered = allOrders;
+
+  // Filter by Tab (today vs all)
+  if (currentHistTab === 'today') {
+    filtered = allOrders.filter(o => o.date === todayStr);
+    // If today has no orders, but we have recent past orders, let user know and provide fallback
+    if (filtered.length === 0 && allOrders.length > 0 && !searchQ) {
+      document.getElementById('history-badge').textContent = '0 วันนี้';
+      list.innerHTML = `
+        <div style="text-align:center; padding: 20px 10px; color:var(--text-muted); font-size:12px;">
+          <div style="font-size:28px; margin-bottom:6px; opacity:0.5;">🕒</div>
+          ยังไม่มีออเดอร์ของวันนี้<br>
+          <button onclick="setHistoryTab('all', document.getElementById('tab-hist-all'))" style="margin-top:8px; background:rgba(255,255,255,0.08); border:1px solid var(--panel-border); color:#ffd280; padding:4px 12px; border-radius:99px; font-size:11px; cursor:pointer;">
+            ดูประวัติทั้งหมด (${allOrders.length} ออเดอร์) ➔
+          </button>
+        </div>
+      `;
+      return;
+    }
+  }
+
+  // Filter by Search Query
+  if (searchQ) {
+    filtered = filtered.filter(o => {
+      const matchNote = (o.note || '').toLowerCase().includes(searchQ);
+      const matchDet = (o.itemsDetail || '').toLowerCase().includes(searchQ);
+      const matchTime = (o.time || '').toLowerCase().includes(searchQ);
+      return matchNote || matchDet || matchTime;
+    });
+  }
+
+  document.getElementById('history-badge').textContent = filtered.length;
+
+  if (!filtered.length) {
+    list.innerHTML = `
+      <div class="empty-msg" style="padding: 24px 0;">
+        <div style="font-size:30px; margin-bottom:6px; opacity:0.4;">📋</div>
+        ${searchQ ? 'ไม่พบออเดอร์ที่ตรงกับการค้นหา' : 'ยังไม่มีประวัติออเดอร์'}
+      </div>
+    `;
+    return;
+  }
+
+  list.innerHTML = filtered.map((r, i) => {
+    const rawIdx = allOrders.indexOf(r);
+    const isToday = r.date === todayStr;
+    const formattedDate = r.date && r.date.length === 8 ? `${r.date.slice(0,2)}/${r.date.slice(2,4)}` : r.date;
+    
+    // Parse itemsDetail into chips
+    let skewerChipsHtml = '';
+    if (r.itemsDetail) {
+      const itemsArr = r.itemsDetail.split(',');
+      skewerChipsHtml = itemsArr.map(it => {
+        const parts = it.trim().split(/[×x*]/);
+        const name = parts[0] ? parts[0].trim() : it.trim();
+        const qty = parts[1] ? parts[1].trim() : '1';
+        return `<span class="skewer-chip">${name} <b>×${qty}</b></span>`;
+      }).join('');
+    } else {
+      skewerChipsHtml = `<span style="font-size:11px; color:var(--text-muted);">${r.sticks || 0} ไม้</span>`;
+    }
+
+    return `
+      <div class="order-card ${isToday ? 'highlight' : ''}" style="animation: fadeIn 0.25s ease ${i*0.02}s both;">
+        <div class="order-card-header">
+          <div class="order-time-badge">
+            <span>🕒 ${r.time || '--:--'}</span>
+            ${!isToday ? `<span class="order-date-tag">${formattedDate}</span>` : '<span class="order-date-tag" style="color:var(--success); background:rgba(46,213,115,0.15)">วันนี้</span>'}
+          </div>
+          <div class="order-grand-amt">฿${Number(r.amount || 0).toLocaleString()}</div>
+        </div>
+
+        ${r.note ? `
+          <div class="order-customer-note">
+            <span>👤</span>
+            <span>${r.note}</span>
+          </div>
+        ` : ''}
+
+        <!-- Skewers Breakdown -->
+        <div class="order-skewer-list">
+          ${skewerChipsHtml}
+        </div>
+
+        <!-- Action Buttons -->
+        <div class="order-card-actions">
+          <span>🍢 รวม ${r.sticks || 0} ไม้</span>
+          <div style="display:flex; gap:5px;">
+            <button class="btn-card-action" onclick="copySingleOrderToLine(${rawIdx})" title="คัดลอกสรุปรายการนี้ส่ง LINE">
+              <span>📋 ส่ง LINE</span>
+            </button>
+            <button class="btn-card-action" onclick="reorderToCart(${rawIdx})" title="โหลดรายการนี้ลงตะกร้า">
+              <span>🔄 สั่งซ้ำ</span>
+            </button>
+          </div>
+        </div>
+      </div>
+    `;
+  }).join('');
+}
+
 /* ─── 1-CLICK ORDER SUBMISSION ─── */
 async function submitSale() {
   if (!cfg.url) {
@@ -2145,13 +2506,24 @@ async function submitSale() {
   const note = document.getElementById('f-note').value.trim();
   const time = new Date().toLocaleTimeString('th-TH', { hour:'2-digit', minute:'2-digit' });
   const itemsDetail = items.map(i => `${i.name}×${i.qty}`).join(', ');
+  const todayStr = getDateStr();
 
-  try {
-    let localHist = JSON.parse(localStorage.getItem('mala_local_orders') || '[]');
-    localHist.push({ date: getDateStr(), time, amount: totalAmt, sticks: totalSticks, itemsDetail, note });
-    if (localHist.length > 200) localHist = localHist.slice(-200);
-    localStorage.setItem('mala_local_orders', JSON.stringify(localHist));
-  } catch(e) {}
+  // Create new order record
+  const newOrder = {
+    date: todayStr,
+    time,
+    sticks: totalSticks,
+    amount: totalAmt,
+    note: note || 'ลูกค้า LINE',
+    itemsDetail,
+    itemsJson: JSON.stringify(items)
+  };
+
+  // Add to local history immediately at the beginning
+  allOrders.unshift(newOrder);
+  saveLocalHistory();
+  renderRecentOrders();
+  updateDashboardSummary();
 
   try {
     await fetch(cfg.url, {
@@ -2159,7 +2531,7 @@ async function submitSale() {
       mode: 'no-cors',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
-        date: getDateStr(),
+        date: todayStr,
         time,
         sticks: totalSticks,
         amount: totalAmt,
@@ -2173,9 +2545,9 @@ async function submitSale() {
     toast(`🎉 บันทึก ${totalSticks} ไม้ (฿${totalAmt.toLocaleString()}) สำเร็จ!`);
     clearCart();
     document.getElementById('f-note').value = '';
-    setTimeout(fetchFromSheet, 1000);
+    setTimeout(refreshHistoryData, 1200);
   } catch(e) {
-    toast('❌ บันทึกล้มเหลว: ' + e.message, true);
+    toast('⚠️ บันทึกในเครื่องแล้ว (ส่งไป Google Sheets ล้มเหลว: ' + e.message + ')', true);
   } finally {
     updateCartUI();
   }
@@ -2190,21 +2562,57 @@ function getDateStr() {
 async function fetchFromSheet() {
   if (!cfg.url) return;
   try {
-    const res = await fetch(cfg.url + '?date=' + encodeURIComponent(getDateStr()));
+    const todayStr = getDateStr();
+    const res = await fetch(cfg.url + '?date=' + encodeURIComponent(todayStr));
     const data = await res.json();
-    log = (data.rows || []).map(r => ({ ...r, amount: +r.amount })).reverse();
-    renderRecentOrders();
     
-    if (document.getElementById('dash-date-label').textContent === 'ยอดขายวันนี้') {
-      const tot = log.reduce((s,r) => s + r.amount, 0);
-      const stks = log.reduce((s,r) => s + (+r.sticks || 0), 0);
-      document.getElementById('dash-total').textContent = '฿' + tot.toLocaleString();
-      document.getElementById('dash-sticks').textContent = stks.toLocaleString();
-      document.getElementById('dash-orders').textContent = log.length.toLocaleString();
+    if (data.rows && Array.isArray(data.rows)) {
+      const serverRows = data.rows.map(r => ({
+        date: r.date || todayStr,
+        time: r.time || '',
+        sticks: +r.sticks || 0,
+        amount: +r.amount || 0,
+        note: r.note || '',
+        itemsDetail: r.itemsDetail || r['รายการ'] || r.items || '',
+        itemsJson: r.itemsJson || ''
+      }));
+
+      // Merge server rows with allOrders (avoid duplicate by date+time+amount)
+      serverRows.forEach(sr => {
+        const exists = allOrders.some(lo => lo.date === sr.date && lo.time === sr.time && lo.amount === sr.amount);
+        if (!exists) {
+          allOrders.push(sr);
+        } else {
+          // Update details if missing
+          const match = allOrders.find(lo => lo.date === sr.date && lo.time === sr.time && lo.amount === sr.amount);
+          if (match && !match.itemsDetail && sr.itemsDetail) match.itemsDetail = sr.itemsDetail;
+        }
+      });
+
+      saveLocalHistory();
+      renderRecentOrders();
+      updateDashboardSummary();
     }
   } catch(e) {
     console.error('Fetch error', e);
   }
+}
+
+function refreshHistoryData() {
+  fetchFromSheet();
+  fetchSummary();
+}
+
+function updateDashboardSummary() {
+  const todayStr = getDateStr();
+  const todayOrders = allOrders.filter(r => r.date === todayStr);
+
+  const tot = todayOrders.reduce((s, r) => s + Number(r.amount || 0), 0);
+  const stks = todayOrders.reduce((s, r) => s + Number(r.sticks || 0), 0);
+
+  document.getElementById('dash-total').textContent = '฿' + tot.toLocaleString();
+  document.getElementById('dash-sticks').textContent = stks.toLocaleString();
+  document.getElementById('dash-orders').textContent = todayOrders.length.toLocaleString();
 }
 
 async function fetchSummary() {
@@ -2240,54 +2648,6 @@ async function fetchSummary() {
       renderStatsView();
     }
   } catch(e) {}
-}
-
-function renderRecentOrders() {
-  const list = document.getElementById('recent-orders');
-  if (!log.length) {
-    list.innerHTML = '<div class="empty-msg">ยังไม่มีออเดอร์วันนี้</div>';
-    return;
-  }
-  
-  let localHist = [];
-  try { localHist = JSON.parse(localStorage.getItem('mala_local_orders') || '[]'); } catch(e){}
-
-  list.innerHTML = log.map((r, i) => {
-    let det = r.itemsDetail || r['รายการ'] || r.items;
-    if (!det) {
-      const localMatch = localHist.find(x => x.date === getDateStr() && x.time === r.time && x.amount === r.amount);
-      if (localMatch) det = localMatch.itemsDetail;
-    }
-
-    return `
-      <div class="order-item-wrap" style="animation: fadeIn 0.3s ease ${i*0.03}s both;">
-        <div class="order-item" onclick="toggleOrderDetails(${i})">
-          <div>
-            <div class="order-id">🕒 ${r.time} ${r.note ? `• <span style="color:var(--accent); font-size:12px;">${r.note}</span>` : ''}</div>
-            <div class="order-det">${r.sticks} ไม้</div>
-          </div>
-          <div style="display:flex; align-items:center; gap:8px;">
-            <div class="order-amt">฿${r.amount.toLocaleString()}</div>
-            <span id="order-icon-${i}" style="font-size:10px; color:var(--text-muted);">▼</span>
-          </div>
-        </div>
-        <div id="order-det-${i}" class="order-expanded-det">
-          ${det 
-            ? det.split(',').map(item => `<span style="display:inline-block; background:rgba(255,255,255,0.08); padding:3px 8px; border-radius:6px; margin:2px 4px 2px 0; font-size:11px;">${item.trim()}</span>`).join('') 
-            : '<span style="color:var(--text-muted); font-size:11px;">ไม่มีรายละเอียดรายการ</span>'}
-        </div>
-      </div>
-    `;
-  }).join('');
-}
-
-function toggleOrderDetails(idx) {
-  const det = document.getElementById('order-det-' + idx);
-  const icon = document.getElementById('order-icon-' + idx);
-  if (!det) return;
-  const isHidden = det.style.display === 'none' || !det.style.display;
-  det.style.display = isHidden ? 'block' : 'none';
-  icon.textContent = isHidden ? '▲' : '▼';
 }
 
 function renderEmptyChart() {
