@@ -15,8 +15,8 @@
       --bg-gradient: radial-gradient(circle at 10% 10%, rgba(255, 71, 87, 0.12), transparent 35%),
                      radial-gradient(circle at 90% 90%, rgba(255, 165, 2, 0.10), transparent 35%),
                      #0a0c10;
-      --panel-bg: rgba(20, 24, 33, 0.85);
-      --panel-card: rgba(28, 33, 46, 0.78);
+      --panel-bg: rgba(20, 24, 33, 0.88);
+      --panel-card: rgba(28, 33, 46, 0.85);
       --panel-border: rgba(255, 255, 255, 0.09);
       --panel-border-glow: rgba(255, 71, 87, 0.45);
       --text-main: #ffffff;
@@ -330,6 +330,9 @@
       text-transform: uppercase;
       letter-spacing: 0.5px;
       margin-bottom: 2px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
     }
     .sales-stats-row {
       display: flex;
@@ -379,10 +382,10 @@
       box-shadow: 0 0 10px rgba(255, 165, 2, 0.25);
       transition: height 0.6s cubic-bezier(0.16, 1, 0.3, 1), transform 0.2s, filter 0.2s;
     }
-    .chart-bar-wrap:hover .chart-bar { transform: scaleY(1.05); filter: brightness(1.2); }
+    .chart-bar-wrap:hover .chart-bar { transform: scaleY(1.08); filter: brightness(1.25); }
     .chart-bar.selected {
       background: linear-gradient(to top, #2ed573, #7bed9f) !important;
-      box-shadow: 0 0 12px var(--success-glow) !important;
+      box-shadow: 0 0 15px var(--success-glow) !important;
       border: 1px solid #fff;
     }
     .chart-bar.today {
@@ -391,17 +394,44 @@
     }
     .chart-label { font-size: 9px; color: var(--text-muted); margin-top: 3px; font-weight: 600; }
 
-    /* ─── DYNAMIC DATE SELECTOR PILLS BAR ─── */
+    /* ─── DYNAMIC DATE SELECTOR & DROPDOWN ─── */
+    .history-date-header {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      margin-bottom: 8px;
+    }
+
+    .date-dropdown {
+      width: 100%;
+      background: rgba(0, 0, 0, 0.45);
+      border: 1px solid var(--accent);
+      border-radius: 10px;
+      color: #ffd280;
+      font-family: inherit;
+      font-size: 12px;
+      font-weight: 700;
+      padding: 7px 10px;
+      outline: none;
+      cursor: pointer;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+    }
+    .date-dropdown option {
+      background: #181b22;
+      color: #fff;
+      font-size: 12px;
+    }
+
     .date-pills-scroll {
       display: flex;
       gap: 5px;
       overflow-x: auto;
-      padding-bottom: 4px;
-      margin-bottom: 6px;
+      padding-bottom: 2px;
     }
     .date-pills-scroll::-webkit-scrollbar { height: 3px; }
+    
     .date-pill {
-      padding: 4px 10px;
+      padding: 4px 9px;
       border-radius: 99px;
       border: 1px solid var(--panel-border);
       background: rgba(255, 255, 255, 0.04);
@@ -1411,10 +1441,16 @@
         <div class="panel" style="flex-shrink: 0;">
           <div class="panel-title">
             <span>สรุปยอดขาย</span>
-            <button class="btn-icon" onclick="openDateModal()" data-tooltip="เลือกช่วงวันที่"><span>📅</span></button>
+            <div style="display:flex; align-items:center; gap:6px;">
+              <button class="btn-icon" onclick="openDateModal()" data-tooltip="เลือกวันที่ในปฏิทิน"><span>📅</span></button>
+              <button class="btn-icon" onclick="refreshHistoryData()" data-tooltip="รีเฟรชข้อมูลล่าสุด"><span>↻</span></button>
+            </div>
           </div>
           
-          <div class="sales-sub" id="dash-date-label">ยอดขายวันนี้</div>
+          <div class="sales-sub">
+            <span id="dash-date-label">ยอดขายวันนี้</span>
+            <span id="dash-date-badge" style="font-size:10px; background:rgba(255,255,255,0.06); padding:1px 6px; border-radius:4px; color:var(--text-muted);">21 ส.ค.</span>
+          </div>
           <div class="sales-val" id="dash-total">฿0</div>
           
           <div class="sales-stats-row">
@@ -1428,19 +1464,27 @@
           </div>
         </div>
         
-        <!-- Persistent Order Review Board Panel with Dynamic Date Filter Pills -->
+        <!-- Persistent Order Review Board Panel with Dynamic Date Selector -->
         <div class="panel" style="flex: 1; overflow: hidden;">
           <div class="panel-title">
             <span style="display:flex; align-items:center; gap:6px;">
               <span>📜 รายการออเดอร์</span>
               <span id="history-badge" style="font-size:10px; background:rgba(255,165,2,0.15); color:var(--accent); padding:1px 6px; border-radius:99px; font-weight:700;">0</span>
             </span>
-            <button class="btn-icon" onclick="refreshHistoryData()" data-tooltip="รีเฟรชข้อมูลจาก Sheet"><span>↻</span></button>
           </div>
 
-          <!-- Dynamic Date Selector Pills Bar -->
-          <div class="date-pills-scroll" id="date-pills-bar">
-            <!-- Date pills dynamically injected via JS -->
+          <!-- Dynamic Date Selector Header -->
+          <div class="history-date-header">
+            <!-- Dropdown Selector -->
+            <select id="date-select-dropdown" class="date-dropdown" onchange="selectDate(this.value)">
+              <option value="today">🌟 วันนี้ (21 ส.ค.)</option>
+              <option value="all">🕒 ดูประวัติทั้งหมดทุกวัน</option>
+            </select>
+
+            <!-- Quick Date Pills Bar -->
+            <div class="date-pills-scroll" id="date-pills-bar">
+              <!-- Injected via JS -->
+            </div>
           </div>
 
           <!-- Quick Search in Order History -->
@@ -1680,9 +1724,12 @@
 <!-- DATE PICKER MODAL -->
 <div class="modal-overlay" id="modal-date">
   <div class="modal-content">
-    <div class="modal-title">เลือกวันที่ดูยอดขาย & ประวัติ</div>
+    <div class="modal-title">
+      <span>📅 เลือกวันที่ดูยอดขาย & ออเดอร์</span>
+      <button class="btn-icon" onclick="closeModal('modal-date')" style="width:26px; height:26px;">✕</button>
+    </div>
     <div class="input-group">
-      <label>เลือกวันที่ต้องการดู</label>
+      <label>เลือกวันที่</label>
       <input type="date" id="date-picker-input">
     </div>
     <div class="modal-actions">
@@ -1857,6 +1904,21 @@ function formatTimeDisplay(t) {
     }
   }
   return String(t);
+}
+
+function formatDateDisplay(dStr) {
+  if (!dStr) return '';
+  if (dStr === 'today') return 'วันนี้';
+  if (dStr === 'all') return 'ทั้งหมดทุกวัน';
+  if (dStr.length === 8) {
+    const day = dStr.slice(0,2);
+    const m = parseInt(dStr.slice(2,4));
+    const months = ['ม.ค.','ก.พ.','มี.ค.','เม.ย.','พ.ค.','มิ.ย.','ก.ค.','ส.ค.','ก.ย.','ต.ค.','พ.ย.','ธ.ค.'];
+    const monthName = months[m-1] || `${m}`;
+    const year = dStr.slice(4);
+    return `${day} ${monthName} ${year}`;
+  }
+  return dStr;
 }
 
 function computeSticksCount(r) {
@@ -2383,7 +2445,7 @@ function loadLocalHistory() {
   } catch(e) {
     allOrders = [];
   }
-  renderDatePills();
+  renderDateSelector();
   renderRecentOrders();
   updateDashboardSummary();
 }
@@ -2398,7 +2460,12 @@ function saveLocalHistory() {
 function selectDate(dateKey) {
   playHaptic('tap');
   selectedDateStr = dateKey;
-  renderDatePills();
+  
+  // Sync dropdown value if not matching
+  const dd = document.getElementById('date-select-dropdown');
+  if (dd) dd.value = dateKey;
+
+  renderDateSelector();
   
   // If selecting a specific date not fully loaded, fetch from Sheet
   if (dateKey !== 'today' && dateKey !== 'all' && cfg.url) {
@@ -2409,10 +2476,9 @@ function selectDate(dateKey) {
   updateDashboardSummary();
 }
 
-function renderDatePills() {
+function renderDateSelector() {
   const pillsBar = document.getElementById('date-pills-bar');
-  if (!pillsBar) return;
-
+  const dropdown = document.getElementById('date-select-dropdown');
   const todayStr = getDateStr();
   
   // Collect all unique dates from allOrders + summaryData
@@ -2427,45 +2493,63 @@ function renderDatePills() {
     return dA < dB ? 1 : -1;
   });
 
-  let html = '';
-
-  // 1. "Today" Pill
-  const isTodayActive = selectedDateStr === 'today' || selectedDateStr === todayStr;
-  const todayCount = allOrders.filter(o => o.date === todayStr).length;
-  html += `
-    <button class="date-pill today-pill ${isTodayActive ? 'active' : ''}" onclick="selectDate('today')">
-      <span>🌟 วันนี้</span>
-      ${todayCount > 0 ? `<span style="background:rgba(0,0,0,0.3); padding:0 5px; border-radius:99px; font-size:10px;">${todayCount}</span>` : ''}
-    </button>
-  `;
-
-  // 2. Available Date Pills (e.g. 20/08, 19/08, 18/08)
-  sortedDates.forEach(dt => {
-    if (dt === todayStr) return; // already represented by "Today"
-    const isAct = selectedDateStr === dt;
-    const formattedShort = dt.length === 8 ? `${dt.slice(0,2)}/${dt.slice(2,4)}` : dt;
+  // Build Options for Dropdown
+  if (dropdown) {
+    let ddHtml = '';
+    const todayOrdersCount = allOrders.filter(o => o.date === todayStr).length;
+    ddHtml += `<option value="today">🌟 วันนี้ (${todayOrdersCount} บิล)</option>`;
     
-    // Count orders from local or summary
-    const sumMatch = summaryData.find(s => s.date === dt);
-    const ordCount = sumMatch ? sumMatch.orders : allOrders.filter(o => o.date === dt).length;
+    sortedDates.forEach(dt => {
+      if (dt === todayStr) return;
+      const sumMatch = summaryData.find(s => s.date === dt);
+      const count = sumMatch ? sumMatch.orders : allOrders.filter(o => o.date === dt).length;
+      const tot = sumMatch ? sumMatch.total : allOrders.filter(o => o.date === dt).reduce((s,r) => s + Number(r.amount||0), 0);
+      const formatted = formatDateDisplay(dt);
+      ddHtml += `<option value="${dt}">📆 ${formatted} (${count} บิล • ฿${tot.toLocaleString()})</option>`;
+    });
+
+    ddHtml += `<option value="all">🕒 ดูประวัติทั้งหมดทุกวัน (${allOrders.length} บิล)</option>`;
+    dropdown.innerHTML = ddHtml;
+    dropdown.value = selectedDateStr;
+  }
+
+  // Build Quick Pills
+  if (pillsBar) {
+    let html = '';
+    const isTodayActive = selectedDateStr === 'today' || selectedDateStr === todayStr;
+    const todayCount = allOrders.filter(o => o.date === todayStr).length;
     
     html += `
-      <button class="date-pill ${isAct ? 'active' : ''}" onclick="selectDate('${dt}')">
-        <span>📆 ${formattedShort}</span>
-        ${ordCount > 0 ? `<span style="background:rgba(0,0,0,0.25); padding:0 4px; border-radius:99px; font-size:10px; opacity:0.85;">${ordCount}</span>` : ''}
+      <button class="date-pill today-pill ${isTodayActive ? 'active' : ''}" onclick="selectDate('today')">
+        <span>🌟 วันนี้</span>
+        ${todayCount > 0 ? `<span style="background:rgba(0,0,0,0.3); padding:0 5px; border-radius:99px; font-size:10px;">${todayCount}</span>` : ''}
       </button>
     `;
-  });
 
-  // 3. "All History" Pill
-  const isAllActive = selectedDateStr === 'all';
-  html += `
-    <button class="date-pill ${isAllActive ? 'active' : ''}" onclick="selectDate('all')">
-      <span>🕒 ทั้งหมด (${allOrders.length})</span>
-    </button>
-  `;
+    sortedDates.slice(0, 4).forEach(dt => {
+      if (dt === todayStr) return;
+      const isAct = selectedDateStr === dt;
+      const formattedShort = dt.length === 8 ? `${dt.slice(0,2)}/${dt.slice(2,4)}` : dt;
+      const sumMatch = summaryData.find(s => s.date === dt);
+      const ordCount = sumMatch ? sumMatch.orders : allOrders.filter(o => o.date === dt).length;
+      
+      html += `
+        <button class="date-pill ${isAct ? 'active' : ''}" onclick="selectDate('${dt}')">
+          <span>📆 ${formattedShort}</span>
+          ${ordCount > 0 ? `<span style="background:rgba(0,0,0,0.25); padding:0 4px; border-radius:99px; font-size:10px; opacity:0.85;">${ordCount}</span>` : ''}
+        </button>
+      `;
+    });
 
-  pillsBar.innerHTML = html;
+    const isAllActive = selectedDateStr === 'all';
+    html += `
+      <button class="date-pill ${isAllActive ? 'active' : ''}" onclick="selectDate('all')">
+        <span>🕒 ทั้งหมด</span>
+      </button>
+    `;
+
+    pillsBar.innerHTML = html;
+  }
 }
 
 function renderRecentOrders() {
@@ -2495,23 +2579,30 @@ function renderRecentOrders() {
   document.getElementById('history-badge').textContent = filtered.length;
 
   if (!filtered.length) {
-    let emptyMsgTitle = 'ยังไม่มีออเดอร์ในวันนี้';
+    let emptyMsgTitle = 'ยังไม่มีออเดอร์ใหม่ในวันนี้';
     if (selectedDateStr !== 'today' && selectedDateStr !== 'all') {
-      const dShow = selectedDateStr.length === 8 ? `${selectedDateStr.slice(0,2)}/${selectedDateStr.slice(2,4)}/${selectedDateStr.slice(4)}` : selectedDateStr;
+      const dShow = formatDateDisplay(selectedDateStr);
       emptyMsgTitle = `ไม่มีข้อมูลออเดอร์ของวันที่ ${dShow}`;
     } else if (searchQ) {
       emptyMsgTitle = 'ไม่พบออเดอร์ที่ตรงกับการค้นหา';
     }
 
+    // Check if there are other dates available
+    const latestDate = summaryData.length > 0 ? summaryData[summaryData.length - 1].date : (allOrders.length > 0 ? allOrders[0].date : null);
+
     list.innerHTML = `
       <div class="empty-msg" style="padding: 24px 10px;">
         <div style="font-size:32px; margin-bottom:8px; opacity:0.4;">📋</div>
         ${emptyMsgTitle}<br>
-        ${selectedDateStr === 'today' && allOrders.length > 0 ? `
+        ${selectedDateStr === 'today' && latestDate && latestDate !== todayStr ? `
+          <button onclick="selectDate('${latestDate}')" style="margin-top:10px; background:rgba(255,255,255,0.08); border:1px solid var(--panel-border); color:#ffd280; padding:6px 16px; border-radius:99px; font-size:12px; font-weight:700; cursor:pointer;">
+            แตะดูออเดอร์ล่าสุด (${formatDateDisplay(latestDate)}) ➔
+          </button>
+        ` : (allOrders.length > 0 && selectedDateStr === 'today' ? `
           <button onclick="selectDate('all')" style="margin-top:10px; background:rgba(255,255,255,0.08); border:1px solid var(--panel-border); color:#ffd280; padding:6px 16px; border-radius:99px; font-size:12px; font-weight:700; cursor:pointer;">
             ดูประวัติทั้งหมด (${allOrders.length} ออเดอร์) ➔
           </button>
-        ` : ''}
+        ` : '')}
       </div>
     `;
     return;
@@ -2622,7 +2713,7 @@ async function submitSale() {
   allOrders.unshift(newOrder);
   selectedDateStr = 'today';
   saveLocalHistory();
-  renderDatePills();
+  renderDateSelector();
   renderRecentOrders();
   updateDashboardSummary();
 
@@ -2693,11 +2784,15 @@ async function fetchDateRowsFromSheet(dateStr) {
           allOrders.push(sr);
         } else {
           const match = allOrders.find(lo => lo.date === sr.date && lo.time === sr.time && lo.amount === sr.amount);
-          if (match && !match.itemsDetail && sr.itemsDetail) match.itemsDetail = sr.itemsDetail;
+          if (match) {
+            if (!match.itemsDetail && sr.itemsDetail) match.itemsDetail = sr.itemsDetail;
+            if (!match.sticks && sr.sticks) match.sticks = sr.sticks;
+          }
         }
       });
 
       saveLocalHistory();
+      renderDateSelector();
       renderRecentOrders();
       updateDashboardSummary();
     }
@@ -2719,17 +2814,20 @@ function updateDashboardSummary() {
     const stks = todayOrders.reduce((s, r) => s + computeSticksCount(r), 0);
 
     document.getElementById('dash-date-label').textContent = 'ยอดขายวันนี้';
+    document.getElementById('dash-date-badge').textContent = formatDateDisplay(todayStr);
     document.getElementById('dash-total').textContent = '฿' + tot.toLocaleString();
     document.getElementById('dash-sticks').textContent = stks.toLocaleString();
     document.getElementById('dash-orders').textContent = todayOrders.length.toLocaleString();
   } else if (selectedDateStr === 'all') {
-    const tot = allOrders.reduce((s, r) => s + Number(r.amount || 0), 0);
-    const stks = allOrders.reduce((s, r) => s + computeSticksCount(r), 0);
+    const tot = summaryData.length > 0 ? summaryData.reduce((s,r) => s + r.total, 0) : allOrders.reduce((s, r) => s + Number(r.amount || 0), 0);
+    const stks = summaryData.length > 0 ? summaryData.reduce((s,r) => s + r.sticks, 0) : allOrders.reduce((s, r) => s + computeSticksCount(r), 0);
+    const ords = summaryData.length > 0 ? summaryData.reduce((s,r) => s + r.orders, 0) : allOrders.length;
 
     document.getElementById('dash-date-label').textContent = 'ยอดรวมทุกวันทั้งหมด';
+    document.getElementById('dash-date-badge').textContent = `${summaryData.length || 1} วัน`;
     document.getElementById('dash-total').textContent = '฿' + tot.toLocaleString();
     document.getElementById('dash-sticks').textContent = stks.toLocaleString();
-    document.getElementById('dash-orders').textContent = allOrders.length.toLocaleString();
+    document.getElementById('dash-orders').textContent = ords.toLocaleString();
   } else {
     // Specific date
     const dateOrders = allOrders.filter(r => r.date === selectedDateStr);
@@ -2738,13 +2836,16 @@ function updateDashboardSummary() {
     const tot = sumMatch ? sumMatch.total : dateOrders.reduce((s, r) => s + Number(r.amount || 0), 0);
     const stks = sumMatch ? sumMatch.sticks : dateOrders.reduce((s, r) => s + computeSticksCount(r), 0);
     const ords = sumMatch ? sumMatch.orders : dateOrders.length;
-    const dShow = selectedDateStr.length === 8 ? `${selectedDateStr.slice(0,2)}/${selectedDateStr.slice(2,4)}` : selectedDateStr;
+    const formatted = formatDateDisplay(selectedDateStr);
 
-    document.getElementById('dash-date-label').textContent = `ยอดขายวันที่ ${dShow}`;
+    document.getElementById('dash-date-label').textContent = `ยอดขายวันที่`;
+    document.getElementById('dash-date-badge').textContent = formatted;
     document.getElementById('dash-total').textContent = '฿' + tot.toLocaleString();
     document.getElementById('dash-sticks').textContent = stks.toLocaleString();
     document.getElementById('dash-orders').textContent = ords.toLocaleString();
   }
+
+  renderChart(summaryData.slice(-7));
 }
 
 async function fetchSummary() {
@@ -2783,8 +2884,8 @@ async function fetchSummary() {
       } catch(e) {}
     }
     
-    renderDatePills();
-    renderChart(summaryData.slice(-7));
+    renderDateSelector();
+    updateDashboardSummary();
     if (document.getElementById('view-stats').classList.contains('active')) {
       renderStatsView();
     }
@@ -2879,7 +2980,7 @@ function renderStatsView() {
   const histSorted = [...summaryData].reverse();
   histList.innerHTML = histSorted.map((r, i) => {
     const isToday = r.date === getDateStr();
-    const lbl = r.date.length === 8 ? `${r.date.slice(0,2)}/${r.date.slice(2,4)}/${r.date.slice(4)}` : r.date;
+    const lbl = formatDateDisplay(r.date);
     return `
       <div class="hist-item" onclick="selectDate('${r.date}'); switchView('pos');" style="cursor:pointer; animation: fadeIn 0.3s ease ${i*0.03}s both">
         <div>
@@ -2909,9 +3010,15 @@ function applyCustomDatePick() {
   closeModal('modal-date');
   if (!val) return;
   
-  const d = new Date(val);
-  const dateKey = `${String(d.getDate()).padStart(2,'0')}${String(d.getMonth()+1).padStart(2,'0')}${d.getFullYear()+543}`;
-  selectDate(dateKey);
+  // Val is YYYY-MM-DD in Gregorian CE (e.g. 2026-08-18)
+  const parts = val.split('-');
+  if (parts.length === 3) {
+    const y = parseInt(parts[0]);
+    const beYear = y > 2400 ? y : y + 543;
+    const dateKey = `${parts[2]}${parts[1]}${beYear}`;
+    selectDate(dateKey);
+    toast('📅 เลือกดูวันที่ ' + formatDateDisplay(dateKey));
+  }
 }
 
 function toast(msg, isError = false) {
