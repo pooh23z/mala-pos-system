@@ -235,7 +235,7 @@
     .view.active { display: grid; }
     
     #view-pos {
-      grid-template-columns: 330px 1fr 340px;
+      grid-template-columns: 340px 1fr 340px;
       gap: 12px;
     }
     #view-stats {
@@ -244,7 +244,7 @@
     }
 
     @media (max-width: 1250px) {
-      #view-pos { grid-template-columns: 290px 1fr 300px; gap: 10px; padding: 10px 12px 70px; }
+      #view-pos { grid-template-columns: 300px 1fr 300px; gap: 10px; padding: 10px 12px 70px; }
       .top-bar { padding: 0 12px; }
     }
     @media (max-width: 950px) {
@@ -287,7 +287,7 @@
       font-size: 14px;
       font-weight: 700;
       color: #fff;
-      margin-bottom: 10px;
+      margin-bottom: 8px;
       display: flex;
       justify-content: space-between;
       align-items: center;
@@ -328,7 +328,7 @@
       color: var(--accent);
       font-weight: 700;
       text-transform: uppercase;
-      letter-spacing: 1px;
+      letter-spacing: 0.5px;
       margin-bottom: 2px;
     }
     .sales-stats-row {
@@ -369,6 +369,7 @@
       justify-content: flex-end;
       height: 100%;
       cursor: pointer;
+      position: relative;
     }
     .chart-bar {
       width: 100%;
@@ -376,43 +377,57 @@
       border-radius: 4px;
       background: linear-gradient(to top, var(--accent), #ff793f);
       box-shadow: 0 0 10px rgba(255, 165, 2, 0.25);
-      transition: height 0.6s cubic-bezier(0.16, 1, 0.3, 1), transform 0.2s;
+      transition: height 0.6s cubic-bezier(0.16, 1, 0.3, 1), transform 0.2s, filter 0.2s;
     }
     .chart-bar-wrap:hover .chart-bar { transform: scaleY(1.05); filter: brightness(1.2); }
+    .chart-bar.selected {
+      background: linear-gradient(to top, #2ed573, #7bed9f) !important;
+      box-shadow: 0 0 12px var(--success-glow) !important;
+      border: 1px solid #fff;
+    }
     .chart-bar.today {
       background: linear-gradient(to top, var(--primary), #ff6b81);
       box-shadow: 0 0 12px var(--primary-glow);
     }
-    .chart-label { font-size: 9px; color: var(--text-muted); margin-top: 3px; font-weight: 500; }
+    .chart-label { font-size: 9px; color: var(--text-muted); margin-top: 3px; font-weight: 600; }
 
-    /* ─── ORDERS HISTORY & REVIEW BOARD (EXPANDED & DETAILED) ─── */
-    .history-tabs-bar {
+    /* ─── DYNAMIC DATE SELECTOR PILLS BAR ─── */
+    .date-pills-scroll {
       display: flex;
-      gap: 4px;
-      background: rgba(0, 0, 0, 0.3);
-      padding: 3px;
-      border-radius: 8px;
-      margin-bottom: 8px;
-      border: 1px solid var(--panel-border);
+      gap: 5px;
+      overflow-x: auto;
+      padding-bottom: 4px;
+      margin-bottom: 6px;
     }
-    .hist-tab-btn {
-      flex: 1;
-      padding: 4px 6px;
-      border-radius: 6px;
-      border: none;
-      background: transparent;
+    .date-pills-scroll::-webkit-scrollbar { height: 3px; }
+    .date-pill {
+      padding: 4px 10px;
+      border-radius: 99px;
+      border: 1px solid var(--panel-border);
+      background: rgba(255, 255, 255, 0.04);
       color: var(--text-muted);
       font-family: inherit;
       font-size: 11px;
       font-weight: 600;
+      white-space: nowrap;
       cursor: pointer;
-      transition: 0.2s;
-      text-align: center;
+      transition: all 0.2s;
+      display: flex;
+      align-items: center;
+      gap: 4px;
     }
-    .hist-tab-btn.active {
-      background: rgba(255, 255, 255, 0.12);
+    .date-pill:hover { background: rgba(255,255,255,0.08); color: #fff; }
+    .date-pill.active {
+      background: linear-gradient(135deg, var(--accent), #ff793f);
+      border-color: transparent;
+      color: #000;
+      font-weight: 800;
+      box-shadow: 0 3px 10px var(--accent-glow);
+    }
+    .date-pill.today-pill.active {
+      background: linear-gradient(135deg, var(--primary), #ff6b81);
       color: #fff;
-      font-weight: 700;
+      box-shadow: 0 3px 10px var(--primary-glow);
     }
 
     .hist-search-box {
@@ -1392,7 +1407,7 @@
       <!-- COLUMN 1: DASHBOARD & ACTIVE ORDER REVIEW BOARD -->
       <div class="col-dash">
         
-        <!-- Today Sales Summary Panel -->
+        <!-- Today / Selected Date Sales Summary Panel -->
         <div class="panel" style="flex-shrink: 0;">
           <div class="panel-title">
             <span>สรุปยอดขาย</span>
@@ -1407,26 +1422,25 @@
             <div class="mini-stat-pill">📋 <b id="dash-orders">0</b> ออเดอร์</div>
           </div>
           
-          <!-- 7-Day Chart -->
+          <!-- 7-Day Interactive Bar Chart -->
           <div class="chart-container" id="dash-chart">
-            <!-- Bars injected via JS -->
+            <!-- Bars injected via JS with click-to-filter -->
           </div>
         </div>
         
-        <!-- Persistent Order Review Board Panel -->
+        <!-- Persistent Order Review Board Panel with Dynamic Date Filter Pills -->
         <div class="panel" style="flex: 1; overflow: hidden;">
           <div class="panel-title">
             <span style="display:flex; align-items:center; gap:6px;">
               <span>📜 รายการออเดอร์</span>
               <span id="history-badge" style="font-size:10px; background:rgba(255,165,2,0.15); color:var(--accent); padding:1px 6px; border-radius:99px; font-weight:700;">0</span>
             </span>
-            <button class="btn-icon" onclick="refreshHistoryData()" data-tooltip="รีเฟรชข้อมูล"><span>↻</span></button>
+            <button class="btn-icon" onclick="refreshHistoryData()" data-tooltip="รีเฟรชข้อมูลจาก Sheet"><span>↻</span></button>
           </div>
 
-          <!-- History Filter Tabs -->
-          <div class="history-tabs-bar">
-            <button class="hist-tab-btn active" id="tab-hist-today" onclick="setHistoryTab('today', this)">🌟 วันนี้</button>
-            <button class="hist-tab-btn" id="tab-hist-all" onclick="setHistoryTab('all', this)">🕒 ทั้งหมด</button>
+          <!-- Dynamic Date Selector Pills Bar -->
+          <div class="date-pills-scroll" id="date-pills-bar">
+            <!-- Date pills dynamically injected via JS -->
           </div>
 
           <!-- Quick Search in Order History -->
@@ -1666,18 +1680,14 @@
 <!-- DATE PICKER MODAL -->
 <div class="modal-overlay" id="modal-date">
   <div class="modal-content">
-    <div class="modal-title">เลือกวันที่ดูยอดขาย</div>
+    <div class="modal-title">เลือกวันที่ดูยอดขาย & ประวัติ</div>
     <div class="input-group">
-      <label>ตั้งแต่วันที่</label>
-      <input type="date" id="date-start">
-    </div>
-    <div class="input-group">
-      <label>ถึงวันที่</label>
-      <input type="date" id="date-end">
+      <label>เลือกวันที่ต้องการดู</label>
+      <input type="date" id="date-picker-input">
     </div>
     <div class="modal-actions">
       <button class="btn-modal btn-cancel" onclick="closeModal('modal-date')">ยกเลิก</button>
-      <button class="btn-modal btn-confirm" onclick="applyDateFilter()">ตกลง</button>
+      <button class="btn-modal btn-confirm" onclick="applyCustomDatePick()">ตกลง</button>
     </div>
   </div>
 </div>
@@ -1748,7 +1758,7 @@ const MENU = [
 let cart = {}; // { id: qty }
 let customCartItems = []; // [{ id, name, price, qty }]
 let currentPriceFilter = 'all'; // 'all', '6', '7', '10', '13'
-let currentHistTab = 'today'; // 'today' or 'all'
+let selectedDateStr = 'today'; // 'today', 'all', or '20082569'
 let allOrders = []; // Persistent order records merged from local + server
 let summaryData = [];
 let menuSummary = [];
@@ -1791,7 +1801,6 @@ function loadConfig() {
     }
   } catch(e) {}
 
-  // Guarantee embedded defaults if empty
   if (!cfg.url) cfg.url = DEFAULT_POS_URL;
   if (!cfg.urlCost) cfg.urlCost = DEFAULT_COST_URL;
 
@@ -1839,16 +1848,31 @@ function formatTimeDisplay(t) {
     if (t.includes('T')) {
       const d = new Date(t);
       if (!isNaN(d.getTime())) {
-        return d.toLocaleTimeString('th-TH', { hour: '2-digit', minute: '2-digit' });
+        return d.toLocaleTimeString('th-TH', { hour: '2-digit', minute: '2-digit' }) + ' น.';
       }
     }
-    // If string is HH:mm:ss or HH:mm
     if (t.includes(':')) {
       const parts = t.split(':');
-      if (parts.length >= 2) return `${parts[0]}:${parts[1]}`;
+      if (parts.length >= 2) return `${parts[0]}:${parts[1]} น.`;
     }
   }
   return String(t);
+}
+
+function computeSticksCount(r) {
+  if (r.sticks && Number(r.sticks) > 0) return Number(r.sticks);
+  if (r.itemsDetail) {
+    let count = 0;
+    const matches = r.itemsDetail.match(/[×x*]\s*(\d+)/g);
+    if (matches) {
+      matches.forEach(m => {
+        const num = m.replace(/[×x*\s]/g, '');
+        count += parseInt(num) || 0;
+      });
+      if (count > 0) return count;
+    }
+  }
+  return 0;
 }
 
 /* ─── NAVIGATION & VIEWS ─── */
@@ -1966,7 +1990,6 @@ function renderGroupedMenu() {
     html = '<div class="empty-msg">ไม่พบเมนูที่ตรงกับการค้นหา</div>';
   }
 
-  // Append custom item add button
   html += `
     <button class="btn-add-custom" onclick="openModal('modal-custom-item')">
       <span>➕ เพิ่มเมนูพิเศษ / กำหนดราคาเอง</span>
@@ -2296,7 +2319,7 @@ function copySingleOrderToLine(idx) {
     });
   }
   text += `--------------------------\n`;
-  text += `🍢 จำนวนไม้: ${order.sticks} ไม้\n`;
+  text += `🍢 จำนวนไม้: ${computeSticksCount(order)} ไม้\n`;
   text += `💰 ยอดโอน: ฿${Number(order.amount).toLocaleString()}\n`;
   if (order.note) text += `💬 หมายเหตุ: ${order.note}\n`;
   text += `--------------------------\n`;
@@ -2347,7 +2370,7 @@ function reorderToCart(idx) {
   toast('🔄 โหลดออเดอร์นี้ลงตะกร้าแล้ว');
 }
 
-/* ─── PERSISTENT ORDER HISTORY MANAGEMENT ─── */
+/* ─── PERSISTENT ORDER HISTORY & DYNAMIC DATE SELECTOR ─── */
 function loadLocalHistory() {
   try {
     const saved = localStorage.getItem('mala_persistent_orders');
@@ -2360,23 +2383,89 @@ function loadLocalHistory() {
   } catch(e) {
     allOrders = [];
   }
+  renderDatePills();
   renderRecentOrders();
   updateDashboardSummary();
 }
 
 function saveLocalHistory() {
   try {
-    if (allOrders.length > 500) allOrders = allOrders.slice(0, 500);
+    if (allOrders.length > 800) allOrders = allOrders.slice(0, 800);
     localStorage.setItem('mala_persistent_orders', JSON.stringify(allOrders));
   } catch(e) {}
 }
 
-function setHistoryTab(tab, el) {
+function selectDate(dateKey) {
   playHaptic('tap');
-  currentHistTab = tab;
-  document.querySelectorAll('.hist-tab-btn').forEach(b => b.classList.remove('active'));
-  if (el) el.classList.add('active');
+  selectedDateStr = dateKey;
+  renderDatePills();
+  
+  // If selecting a specific date not fully loaded, fetch from Sheet
+  if (dateKey !== 'today' && dateKey !== 'all' && cfg.url) {
+    fetchDateRowsFromSheet(dateKey);
+  }
+  
   renderRecentOrders();
+  updateDashboardSummary();
+}
+
+function renderDatePills() {
+  const pillsBar = document.getElementById('date-pills-bar');
+  if (!pillsBar) return;
+
+  const todayStr = getDateStr();
+  
+  // Collect all unique dates from allOrders + summaryData
+  const dateSet = new Set();
+  allOrders.forEach(o => { if (o.date) dateSet.add(String(o.date).padStart(8,'0')); });
+  summaryData.forEach(s => { if (s.date) dateSet.add(String(s.date).padStart(8,'0')); });
+
+  // Convert to array and sort descending (newest first)
+  const sortedDates = Array.from(dateSet).sort((a, b) => {
+    let dA = a.slice(4,8) + a.slice(2,4) + a.slice(0,2);
+    let dB = b.slice(4,8) + b.slice(2,4) + b.slice(0,2);
+    return dA < dB ? 1 : -1;
+  });
+
+  let html = '';
+
+  // 1. "Today" Pill
+  const isTodayActive = selectedDateStr === 'today' || selectedDateStr === todayStr;
+  const todayCount = allOrders.filter(o => o.date === todayStr).length;
+  html += `
+    <button class="date-pill today-pill ${isTodayActive ? 'active' : ''}" onclick="selectDate('today')">
+      <span>🌟 วันนี้</span>
+      ${todayCount > 0 ? `<span style="background:rgba(0,0,0,0.3); padding:0 5px; border-radius:99px; font-size:10px;">${todayCount}</span>` : ''}
+    </button>
+  `;
+
+  // 2. Available Date Pills (e.g. 20/08, 19/08, 18/08)
+  sortedDates.forEach(dt => {
+    if (dt === todayStr) return; // already represented by "Today"
+    const isAct = selectedDateStr === dt;
+    const formattedShort = dt.length === 8 ? `${dt.slice(0,2)}/${dt.slice(2,4)}` : dt;
+    
+    // Count orders from local or summary
+    const sumMatch = summaryData.find(s => s.date === dt);
+    const ordCount = sumMatch ? sumMatch.orders : allOrders.filter(o => o.date === dt).length;
+    
+    html += `
+      <button class="date-pill ${isAct ? 'active' : ''}" onclick="selectDate('${dt}')">
+        <span>📆 ${formattedShort}</span>
+        ${ordCount > 0 ? `<span style="background:rgba(0,0,0,0.25); padding:0 4px; border-radius:99px; font-size:10px; opacity:0.85;">${ordCount}</span>` : ''}
+      </button>
+    `;
+  });
+
+  // 3. "All History" Pill
+  const isAllActive = selectedDateStr === 'all';
+  html += `
+    <button class="date-pill ${isAllActive ? 'active' : ''}" onclick="selectDate('all')">
+      <span>🕒 ทั้งหมด (${allOrders.length})</span>
+    </button>
+  `;
+
+  pillsBar.innerHTML = html;
 }
 
 function renderRecentOrders() {
@@ -2386,22 +2475,11 @@ function renderRecentOrders() {
 
   let filtered = allOrders;
 
-  // Filter by Tab (today vs all)
-  if (currentHistTab === 'today') {
+  // Filter by Date
+  if (selectedDateStr === 'today') {
     filtered = allOrders.filter(o => o.date === todayStr);
-    if (filtered.length === 0 && allOrders.length > 0 && !searchQ) {
-      document.getElementById('history-badge').textContent = '0 วันนี้';
-      list.innerHTML = `
-        <div style="text-align:center; padding: 20px 10px; color:var(--text-muted); font-size:12px;">
-          <div style="font-size:28px; margin-bottom:6px; opacity:0.5;">🕒</div>
-          ยังไม่มีออเดอร์ใหม่ของวันนี้<br>
-          <button onclick="setHistoryTab('all', document.getElementById('tab-hist-all'))" style="margin-top:8px; background:rgba(255,255,255,0.08); border:1px solid var(--panel-border); color:#ffd280; padding:5px 14px; border-radius:99px; font-size:12px; font-weight:700; cursor:pointer;">
-            ดูประวัติทั้งหมด (${allOrders.length} ออเดอร์) ➔
-          </button>
-        </div>
-      `;
-      return;
-    }
+  } else if (selectedDateStr !== 'all') {
+    filtered = allOrders.filter(o => o.date === selectedDateStr);
   }
 
   // Filter by Search Query
@@ -2417,10 +2495,23 @@ function renderRecentOrders() {
   document.getElementById('history-badge').textContent = filtered.length;
 
   if (!filtered.length) {
+    let emptyMsgTitle = 'ยังไม่มีออเดอร์ในวันนี้';
+    if (selectedDateStr !== 'today' && selectedDateStr !== 'all') {
+      const dShow = selectedDateStr.length === 8 ? `${selectedDateStr.slice(0,2)}/${selectedDateStr.slice(2,4)}/${selectedDateStr.slice(4)}` : selectedDateStr;
+      emptyMsgTitle = `ไม่มีข้อมูลออเดอร์ของวันที่ ${dShow}`;
+    } else if (searchQ) {
+      emptyMsgTitle = 'ไม่พบออเดอร์ที่ตรงกับการค้นหา';
+    }
+
     list.innerHTML = `
-      <div class="empty-msg" style="padding: 24px 0;">
-        <div style="font-size:30px; margin-bottom:6px; opacity:0.4;">📋</div>
-        ${searchQ ? 'ไม่พบออเดอร์ที่ตรงกับการค้นหา' : 'ยังไม่มีประวัติออเดอร์'}
+      <div class="empty-msg" style="padding: 24px 10px;">
+        <div style="font-size:32px; margin-bottom:8px; opacity:0.4;">📋</div>
+        ${emptyMsgTitle}<br>
+        ${selectedDateStr === 'today' && allOrders.length > 0 ? `
+          <button onclick="selectDate('all')" style="margin-top:10px; background:rgba(255,255,255,0.08); border:1px solid var(--panel-border); color:#ffd280; padding:6px 16px; border-radius:99px; font-size:12px; font-weight:700; cursor:pointer;">
+            ดูประวัติทั้งหมด (${allOrders.length} ออเดอร์) ➔
+          </button>
+        ` : ''}
       </div>
     `;
     return;
@@ -2431,6 +2522,7 @@ function renderRecentOrders() {
     const isToday = r.date === todayStr;
     const formattedDate = r.date && r.date.length === 8 ? `${r.date.slice(0,2)}/${r.date.slice(2,4)}` : (r.date || '');
     const timeDisplay = formatTimeDisplay(r.time);
+    const sticksCount = computeSticksCount(r);
     
     // Parse itemsDetail into chips
     let skewerChipsHtml = '';
@@ -2443,7 +2535,7 @@ function renderRecentOrders() {
         return `<span class="skewer-chip">${name} <b>×${qty}</b></span>`;
       }).join('');
     } else {
-      skewerChipsHtml = `<span style="font-size:11px; color:var(--text-muted);">${r.sticks || 0} ไม้</span>`;
+      skewerChipsHtml = `<span style="font-size:11px; color:var(--text-muted);">${sticksCount} ไม้</span>`;
     }
 
     return `
@@ -2470,7 +2562,7 @@ function renderRecentOrders() {
 
         <!-- Action Buttons -->
         <div class="order-card-actions">
-          <span>🍢 รวม ${r.sticks || 0} ไม้</span>
+          <span>🍢 รวม ${sticksCount} ไม้</span>
           <div style="display:flex; gap:5px;">
             <button class="btn-card-action" onclick="copySingleOrderToLine(${rawIdx})" title="คัดลอกสรุปรายการนี้ส่ง LINE">
               <span>📋 ส่ง LINE</span>
@@ -2527,9 +2619,10 @@ async function submitSale() {
     itemsJson: JSON.stringify(items)
   };
 
-  // Add to local history immediately at the beginning
   allOrders.unshift(newOrder);
+  selectedDateStr = 'today';
   saveLocalHistory();
+  renderDatePills();
   renderRecentOrders();
   updateDashboardSummary();
 
@@ -2571,12 +2664,21 @@ async function fetchFromSheet() {
   if (!cfg.url) return;
   try {
     const todayStr = getDateStr();
-    const res = await fetch(cfg.url + '?date=' + encodeURIComponent(todayStr));
+    await fetchDateRowsFromSheet(todayStr);
+  } catch(e) {
+    console.error('Fetch error', e);
+  }
+}
+
+async function fetchDateRowsFromSheet(dateStr) {
+  if (!cfg.url || !dateStr || dateStr === 'today' || dateStr === 'all') return;
+  try {
+    const res = await fetch(cfg.url + '?date=' + encodeURIComponent(dateStr));
     const data = await res.json();
     
     if (data.rows && Array.isArray(data.rows)) {
       const serverRows = data.rows.map(r => ({
-        date: r.date || todayStr,
+        date: dateStr,
         time: r.time || '',
         sticks: +r.sticks || 0,
         amount: +r.amount || 0,
@@ -2599,26 +2701,50 @@ async function fetchFromSheet() {
       renderRecentOrders();
       updateDashboardSummary();
     }
-  } catch(e) {
-    console.error('Fetch error', e);
-  }
+  } catch(e) {}
 }
 
 function refreshHistoryData() {
   fetchFromSheet();
   fetchSummary();
+  toast('↻ อัปเดตข้อมูลจาก Google Sheets แล้ว');
 }
 
 function updateDashboardSummary() {
   const todayStr = getDateStr();
-  const todayOrders = allOrders.filter(r => r.date === todayStr);
+  
+  if (selectedDateStr === 'today' || selectedDateStr === todayStr) {
+    const todayOrders = allOrders.filter(r => r.date === todayStr);
+    const tot = todayOrders.reduce((s, r) => s + Number(r.amount || 0), 0);
+    const stks = todayOrders.reduce((s, r) => s + computeSticksCount(r), 0);
 
-  const tot = todayOrders.reduce((s, r) => s + Number(r.amount || 0), 0);
-  const stks = todayOrders.reduce((s, r) => s + Number(r.sticks || 0), 0);
+    document.getElementById('dash-date-label').textContent = 'ยอดขายวันนี้';
+    document.getElementById('dash-total').textContent = '฿' + tot.toLocaleString();
+    document.getElementById('dash-sticks').textContent = stks.toLocaleString();
+    document.getElementById('dash-orders').textContent = todayOrders.length.toLocaleString();
+  } else if (selectedDateStr === 'all') {
+    const tot = allOrders.reduce((s, r) => s + Number(r.amount || 0), 0);
+    const stks = allOrders.reduce((s, r) => s + computeSticksCount(r), 0);
 
-  document.getElementById('dash-total').textContent = '฿' + tot.toLocaleString();
-  document.getElementById('dash-sticks').textContent = stks.toLocaleString();
-  document.getElementById('dash-orders').textContent = todayOrders.length.toLocaleString();
+    document.getElementById('dash-date-label').textContent = 'ยอดรวมทุกวันทั้งหมด';
+    document.getElementById('dash-total').textContent = '฿' + tot.toLocaleString();
+    document.getElementById('dash-sticks').textContent = stks.toLocaleString();
+    document.getElementById('dash-orders').textContent = allOrders.length.toLocaleString();
+  } else {
+    // Specific date
+    const dateOrders = allOrders.filter(r => r.date === selectedDateStr);
+    const sumMatch = summaryData.find(s => s.date === selectedDateStr);
+    
+    const tot = sumMatch ? sumMatch.total : dateOrders.reduce((s, r) => s + Number(r.amount || 0), 0);
+    const stks = sumMatch ? sumMatch.sticks : dateOrders.reduce((s, r) => s + computeSticksCount(r), 0);
+    const ords = sumMatch ? sumMatch.orders : dateOrders.length;
+    const dShow = selectedDateStr.length === 8 ? `${selectedDateStr.slice(0,2)}/${selectedDateStr.slice(2,4)}` : selectedDateStr;
+
+    document.getElementById('dash-date-label').textContent = `ยอดขายวันที่ ${dShow}`;
+    document.getElementById('dash-total').textContent = '฿' + tot.toLocaleString();
+    document.getElementById('dash-sticks').textContent = stks.toLocaleString();
+    document.getElementById('dash-orders').textContent = ords.toLocaleString();
+  }
 }
 
 async function fetchSummary() {
@@ -2641,33 +2767,12 @@ async function fetchSummary() {
 
     menuSummary = d.menuSummary || [];
     
-    // Fetch and sync previous day rows if allOrders is currently sparse
-    if (summaryData.length > 0 && allOrders.length < 5) {
-      const recentDates = summaryData.slice(-3).map(s => s.date);
+    // Automatically preload past dates
+    if (summaryData.length > 0) {
+      const recentDates = summaryData.slice(-5).map(s => s.date);
       for (let dt of recentDates) {
-        try {
-          const dRes = await fetch(cfg.url + '?date=' + encodeURIComponent(dt));
-          const dData = await dRes.json();
-          if (dData.rows && Array.isArray(dData.rows)) {
-            dData.rows.forEach(sr => {
-              const exists = allOrders.some(lo => lo.date === dt && lo.time === sr.time && lo.amount === +sr.amount);
-              if (!exists) {
-                allOrders.push({
-                  date: dt,
-                  time: sr.time || '',
-                  sticks: +sr.sticks || 0,
-                  amount: +sr.amount || 0,
-                  note: sr.note || '',
-                  itemsDetail: sr.itemsDetail || sr['รายการ'] || sr.items || '',
-                  itemsJson: sr.itemsJson || ''
-                });
-              }
-            });
-          }
-        } catch(e){}
+        fetchDateRowsFromSheet(dt);
       }
-      saveLocalHistory();
-      renderRecentOrders();
     }
     
     if (cfg.urlCost) {
@@ -2678,6 +2783,7 @@ async function fetchSummary() {
       } catch(e) {}
     }
     
+    renderDatePills();
     renderChart(summaryData.slice(-7));
     if (document.getElementById('view-stats').classList.contains('active')) {
       renderStatsView();
@@ -2702,13 +2808,15 @@ function renderChart(dataArr) {
   const todayVal = getDateStr();
   
   chart.innerHTML = dataArr.map((d, i) => {
-    const pct = Math.max(Math.round((d.total / maxVal) * 100), 8);
+    const pct = Math.max(Math.round((d.total / maxVal) * 100), 12);
     const isToday = d.date === todayVal;
+    const isSelected = selectedDateStr === d.date;
     const lbl = d.date.length === 8 ? `${d.date.slice(0,2)}/${d.date.slice(2,4)}` : '';
+    
     return `
-      <div class="chart-bar-wrap" style="animation: fadeIn 0.4s ease ${i*0.05}s both;" data-tooltip="฿${d.total.toLocaleString()}">
-        <div class="chart-bar ${isToday ? 'today' : ''}" style="height: ${pct}%"></div>
-        <div class="chart-label">${lbl}</div>
+      <div class="chart-bar-wrap" onclick="selectDate('${d.date}')" style="animation: fadeIn 0.4s ease ${i*0.05}s both;" data-tooltip="฿${d.total.toLocaleString()} (${d.orders} บิล)">
+        <div class="chart-bar ${isSelected ? 'selected' : (isToday ? 'today' : '')}" style="height: ${pct}%"></div>
+        <div class="chart-label" style="${isSelected ? 'color:#2ed573; font-weight:800;' : ''}">${lbl}</div>
       </div>
     `;
   }).join('');
@@ -2773,10 +2881,10 @@ function renderStatsView() {
     const isToday = r.date === getDateStr();
     const lbl = r.date.length === 8 ? `${r.date.slice(0,2)}/${r.date.slice(2,4)}/${r.date.slice(4)}` : r.date;
     return `
-      <div class="hist-item" style="animation: fadeIn 0.3s ease ${i*0.03}s both">
+      <div class="hist-item" onclick="selectDate('${r.date}'); switchView('pos');" style="cursor:pointer; animation: fadeIn 0.3s ease ${i*0.03}s both">
         <div>
           <div class="hist-date">${isToday ? '✨ วันนี้ ' : ''}${lbl}</div>
-          <div class="hist-sub">${r.orders} ออเดอร์ • ${r.sticks} ไม้</div>
+          <div class="hist-sub">${r.orders} ออเดอร์ • ${r.sticks} ไม้ (แตะเพื่อดูบิล)</div>
         </div>
         <div class="hist-total">฿${r.total.toLocaleString()}</div>
       </div>
@@ -2790,38 +2898,20 @@ function closeModal(id) { document.getElementById(id).classList.remove('show'); 
 
 function openDateModal() {
   openModal('modal-date');
-  if (!document.getElementById('date-start').value) {
-    const today = new Date().toISOString().split('T')[0];
-    document.getElementById('date-start').value = today;
-    document.getElementById('date-end').value = today;
+  if (!document.getElementById('date-picker-input').value) {
+    document.getElementById('date-picker-input').value = new Date().toISOString().split('T')[0];
   }
 }
 function openSettingsModal() { openModal('modal-settings'); }
 
-function applyDateFilter() {
-  const s = document.getElementById('date-start').value;
-  const e = document.getElementById('date-end').value;
+function applyCustomDatePick() {
+  const val = document.getElementById('date-picker-input').value;
   closeModal('modal-date');
+  if (!val) return;
   
-  if (!s || !e) return;
-  const start = new Date(s);
-  const end = new Date(e);
-  
-  const filtered = summaryData.filter(r => {
-    const d = new Date(r.date.slice(4,8) + '-' + r.date.slice(2,4) + '-' + r.date.slice(0,2));
-    return d >= start && d <= end;
-  });
-  
-  document.getElementById('dash-date-label').textContent = `${start.toLocaleDateString('th-TH')} - ${end.toLocaleDateString('th-TH')}`;
-  const tot = filtered.reduce((acc, r) => acc + r.total, 0);
-  const stks = filtered.reduce((acc, r) => acc + r.sticks, 0);
-  const ords = filtered.reduce((acc, r) => acc + r.orders, 0);
-  
-  document.getElementById('dash-total').textContent = '฿' + tot.toLocaleString();
-  document.getElementById('dash-sticks').textContent = stks.toLocaleString();
-  document.getElementById('dash-orders').textContent = ords.toLocaleString();
-  
-  renderChart(filtered.length > 10 ? filtered.slice(0,10) : filtered);
+  const d = new Date(val);
+  const dateKey = `${String(d.getDate()).padStart(2,'0')}${String(d.getMonth()+1).padStart(2,'0')}${d.getFullYear()+543}`;
+  selectDate(dateKey);
 }
 
 function toast(msg, isError = false) {
