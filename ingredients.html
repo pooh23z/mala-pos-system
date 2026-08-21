@@ -896,7 +896,7 @@ input::placeholder { color: rgba(255,255,255,0.2); }
     <div class="modal-title">⚙️ ตั้งค่าเชื่อมต่อ Google Sheets</div>
     <div class="field" style="margin-bottom:14px">
       <label>Apps Script Web App URL (สำหรับวัตถุดิบ)</label>
-      <input type="text" id="script-url" placeholder="https://script.google.com/macros/s/.../exec" />
+      <input type="text" id="script-url" value="https://script.google.com/macros/s/AKfycbwzS9HJy2i8ZsiqT19ZicNA6uqbKDLeE9Vum-IMYDmzd4Vxpnp75ffdTJxYvlvQkoHv2A/exec" />
     </div>
     <div class="modal-actions">
       <button class="btn-modal btn-cancel" onclick="closeModal('modal-config')">ปิด</button>
@@ -909,7 +909,8 @@ input::placeholder { color: rgba(255,255,255,0.2); }
 <div class="toast" id="toast"></div>
 
 <script>
-let cfg = { url: '' };
+const DEFAULT_COST_URL = "https://script.google.com/macros/s/AKfycbwzS9HJy2i8ZsiqT19ZicNA6uqbKDLeE9Vum-IMYDmzd4Vxpnp75ffdTJxYvlvQkoHv2A/exec";
+let cfg = { url: DEFAULT_COST_URL };
 let rounds = [];
 let allRoundsData = [];
 let slipBase64 = null;
@@ -923,7 +924,7 @@ function init() {
     if (s) cfg = JSON.parse(s);
 
     // If empty, check if POS config has urlCost
-    if (!cfg.url) {
+    if (!cfg.url) cfg.url = DEFAULT_COST_URL; if (!cfg.url) {
       const posCfg = localStorage.getItem('mala_pos_cfg');
       if (posCfg) {
         const parsed = JSON.parse(posCfg);
@@ -978,7 +979,7 @@ function saveConfig() {
 }
 
 function testConn() {
-  if (!cfg.url) { toast('⚠️ ยังไม่ได้กรอก URL'); return; }
+  if (!cfg.url) cfg.url = DEFAULT_COST_URL; if (!cfg.url) { toast('⚠️ ยังไม่ได้กรอก URL'); return; }
   toast('📡 กำลังทดสอบเชื่อมต่อ...');
   fetch(cfg.url + '?action=getRounds')
     .then(r => r.json())
@@ -1199,7 +1200,7 @@ async function submitItem() {
   if (!name) { toast('⚠️ กรุณากรอกชื่อรายการวัตถุดิบ'); return; }
   if (!qty || qty <= 0) { toast('⚠️ กรุณากรอกจำนวนที่ถูกต้อง'); return; }
   if (price === undefined || price < 0 || isNaN(price)) { toast('⚠️ กรุณากรอกราคา'); return; }
-  if (!cfg.url) { toast('⚠️ ยังไม่ได้ตั้งค่า URL Google Sheets'); openConfigModal(); return; }
+  if (!cfg.url) cfg.url = DEFAULT_COST_URL; if (!cfg.url) { toast('⚠️ ยังไม่ได้ตั้งค่า URL Google Sheets'); openConfigModal(); return; }
 
   const btn = document.getElementById('submit-btn');
   btn.disabled = true;
@@ -1244,7 +1245,7 @@ function clearForm() {
 
 /* ─── SUMMARY VIEW ─── */
 async function loadSummary() {
-  if (!cfg.url) { toast('⚠️ ยังไม่ได้ตั้งค่า URL'); return; }
+  if (!cfg.url) cfg.url = DEFAULT_COST_URL; if (!cfg.url) { toast('⚠️ ยังไม่ได้ตั้งค่า URL'); return; }
   const icon = document.getElementById('refresh-icon');
   icon.className = 'spin';
 
