@@ -1443,13 +1443,13 @@
             <span>สรุปยอดขาย</span>
             <div style="display:flex; align-items:center; gap:6px;">
               <button class="btn-icon" onclick="openDateModal()" data-tooltip="เลือกวันที่ในปฏิทิน"><span>📅</span></button>
-              <button class="btn-icon" onclick="refreshHistoryData()" data-tooltip="รีเฟรชข้อมูลล่าสุด"><span>↻</span></button>
+              <button class="btn-icon" onclick="refreshHistoryData()" data-tooltip="ซิงค์ข้อมูลตรงกับ Sheet 100%"><span>↻</span></button>
             </div>
           </div>
           
           <div class="sales-sub">
             <span id="dash-date-label">ยอดขายวันนี้</span>
-            <span id="dash-date-badge" style="font-size:10px; background:rgba(255,255,255,0.06); padding:1px 6px; border-radius:4px; color:var(--text-muted);">21 ส.ค.</span>
+            <span id="dash-date-badge" style="font-size:10px; background:rgba(255,255,255,0.06); padding:1px 6px; border-radius:4px; color:var(--text-muted);">22 ส.ค.</span>
           </div>
           <div class="sales-val" id="dash-total">฿0</div>
           
@@ -1477,7 +1477,7 @@
           <div class="history-date-header">
             <!-- Dropdown Selector -->
             <select id="date-select-dropdown" class="date-dropdown" onchange="selectDate(this.value)">
-              <option value="today">🌟 วันนี้ (21 ส.ค.)</option>
+              <option value="today">🌟 วันนี้</option>
               <option value="all">🕒 ดูประวัติทั้งหมดทุกวัน</option>
             </select>
 
@@ -1805,8 +1805,8 @@ const MENU = [
 let cart = {}; // { id: qty }
 let customCartItems = []; // [{ id, name, price, qty }]
 let currentPriceFilter = 'all'; // 'all', '6', '7', '10', '13'
-let selectedDateStr = 'today'; // 'today', 'all', or '20082569'
-let allOrders = []; // Persistent order records merged from local + server
+let selectedDateStr = 'today'; // 'today', 'all', or '22082569'
+let allOrders = []; // Persistent order records merged from server (Master Source of Truth)
 let summaryData = [];
 let menuSummary = [];
 let costRounds = [];
@@ -1828,8 +1828,8 @@ function init() {
   renderEmptyChart();
   
   // Auto-connect and fetch from Google Apps Script immediately
-  fetchFromSheet();
   fetchSummary();
+  fetchFromSheet();
 
   // Keyboard shortcut for search
   document.addEventListener('keydown', (e) => {
@@ -1872,8 +1872,8 @@ function saveConfig() {
   closeModal('modal-settings');
   toast('✅ บันทึกการตั้งค่าแล้ว');
   
-  fetchFromSheet();
   fetchSummary();
+  fetchFromSheet();
 }
 
 function updateConnStatus(online) {
@@ -2438,9 +2438,6 @@ function loadLocalHistory() {
     const saved = localStorage.getItem('mala_persistent_orders');
     if (saved) {
       allOrders = JSON.parse(saved);
-    } else {
-      const legacy = localStorage.getItem('mala_local_orders');
-      if (legacy) allOrders = JSON.parse(legacy);
     }
   } catch(e) {
     allOrders = [];
@@ -2461,15 +2458,16 @@ function selectDate(dateKey) {
   playHaptic('tap');
   selectedDateStr = dateKey;
   
-  // Sync dropdown value if not matching
   const dd = document.getElementById('date-select-dropdown');
   if (dd) dd.value = dateKey;
 
   renderDateSelector();
   
-  // If selecting a specific date not fully loaded, fetch from Sheet
+  // If selecting a specific date, fetch fresh authoritative rows from Sheet
   if (dateKey !== 'today' && dateKey !== 'all' && cfg.url) {
     fetchDateRowsFromSheet(dateKey);
+  } else if (dateKey === 'today' && cfg.url) {
+    fetchDateRowsFromSheet(getDateStr());
   }
   
   renderRecentOrders();
@@ -2481,10 +2479,10 @@ function renderDateSelector() {
   const dropdown = document.getElementById('date-select-dropdown');
   const todayStr = getDateStr();
   
-  // Collect all unique dates from allOrders + summaryData
+  // Collect all unique dates from summaryData + allOrders
   const dateSet = new Set();
-  allOrders.forEach(o => { if (o.date) dateSet.add(String(o.date).padStart(8,'0')); });
   summaryData.forEach(s => { if (s.date) dateSet.add(String(s.date).padStart(8,'0')); });
+  allOrders.forEach(o => { if (o.date) dateSet.add(String(o.date).padStart(8,'0')); });
 
   // Convert to array and sort descending (newest first)
   const sortedDates = Array.from(dateSet).sort((a, b) => {
@@ -2496,8 +2494,11 @@ function renderDateSelector() {
   // Build Options for Dropdown
   if (dropdown) {
     let ddHtml = '';
-    const todayOrdersCount = allOrders.filter(o => o.date === todayStr).length;
-    ddHtml += `<option value="today">🌟 วันนี้ (${todayOrdersCount} บิล)</option>`;
+    const sumToday = summaryData.find(s => s.date === todayStr);
+    const todayCount = sumToday ? sumToday.orders : allOrders.filter(o => o.date === todayStr).length;
+    const todayTot = sumToday ? sumToday.total : allOrders.filter(o => o.date === todayStr).reduce((s,r)=>s+Number(r.amount||0), 0);
+    
+    ddHtml += `<option value="today">🌟 วันนี้ (${todayCount} บิล • ฿${todayTot.toLocaleString()})</option>`;
     
     sortedDates.forEach(dt => {
       if (dt === todayStr) return;
@@ -2508,7 +2509,10 @@ function renderDateSelector() {
       ddHtml += `<option value="${dt}">📆 ${formatted} (${count} บิล • ฿${tot.toLocaleString()})</option>`;
     });
 
-    ddHtml += `<option value="all">🕒 ดูประวัติทั้งหมดทุกวัน (${allOrders.length} บิล)</option>`;
+    const grandCount = summaryData.length > 0 ? summaryData.reduce((s,r)=>s+r.orders,0) : allOrders.length;
+    const grandTot = summaryData.length > 0 ? summaryData.reduce((s,r)=>s+r.total,0) : allOrders.reduce((s,r)=>s+Number(r.amount||0),0);
+    ddHtml += `<option value="all">🕒 ดูประวัติทั้งหมดทุกวัน (${grandCount} บิล • ฿${grandTot.toLocaleString()})</option>`;
+    
     dropdown.innerHTML = ddHtml;
     dropdown.value = selectedDateStr;
   }
@@ -2517,7 +2521,8 @@ function renderDateSelector() {
   if (pillsBar) {
     let html = '';
     const isTodayActive = selectedDateStr === 'today' || selectedDateStr === todayStr;
-    const todayCount = allOrders.filter(o => o.date === todayStr).length;
+    const sumToday = summaryData.find(s => s.date === todayStr);
+    const todayCount = sumToday ? sumToday.orders : allOrders.filter(o => o.date === todayStr).length;
     
     html += `
       <button class="date-pill today-pill ${isTodayActive ? 'active' : ''}" onclick="selectDate('today')">
@@ -2579,7 +2584,7 @@ function renderRecentOrders() {
   document.getElementById('history-badge').textContent = filtered.length;
 
   if (!filtered.length) {
-    let emptyMsgTitle = 'ยังไม่มีออเดอร์ใหม่ในวันนี้';
+    let emptyMsgTitle = 'ยังไม่มีออเดอร์ในวันนี้';
     if (selectedDateStr !== 'today' && selectedDateStr !== 'all') {
       const dShow = formatDateDisplay(selectedDateStr);
       emptyMsgTitle = `ไม่มีข้อมูลออเดอร์ของวันที่ ${dShow}`;
@@ -2587,7 +2592,6 @@ function renderRecentOrders() {
       emptyMsgTitle = 'ไม่พบออเดอร์ที่ตรงกับการค้นหา';
     }
 
-    // Check if there are other dates available
     const latestDate = summaryData.length > 0 ? summaryData[summaryData.length - 1].date : (allOrders.length > 0 ? allOrders[0].date : null);
 
     list.innerHTML = `
@@ -2705,7 +2709,7 @@ async function submitSale() {
     time,
     sticks: totalSticks,
     amount: totalAmt,
-    note: note || 'ลูกค้า LINE',
+    note: note || 'LINE OA',
     itemsDetail,
     itemsJson: JSON.stringify(items)
   };
@@ -2737,7 +2741,7 @@ async function submitSale() {
     toast(`🎉 บันทึก ${totalSticks} ไม้ (฿${totalAmt.toLocaleString()}) สำเร็จ!`);
     clearCart();
     document.getElementById('f-note').value = '';
-    setTimeout(refreshHistoryData, 1200);
+    setTimeout(refreshHistoryData, 1500);
   } catch(e) {
     toast('⚠️ บันทึกในเครื่องแล้ว (ส่งไป Google Sheets ล้มเหลว: ' + e.message + ')', true);
   } finally {
@@ -2750,7 +2754,7 @@ function getDateStr() {
   return `${String(d.getDate()).padStart(2,'0')}${String(d.getMonth()+1).padStart(2,'0')}${d.getFullYear()+543}`;
 }
 
-/* ─── DATA FETCHING & DASHBOARD ─── */
+/* ─── AUTHORITATIVE GOOGLE SHEET DATA FETCHING & SYNC ─── */
 async function fetchFromSheet() {
   if (!cfg.url) return;
   try {
@@ -2768,28 +2772,23 @@ async function fetchDateRowsFromSheet(dateStr) {
     const data = await res.json();
     
     if (data.rows && Array.isArray(data.rows)) {
+      // Google Sheets is Master Record for this date.
+      // Filter out all previously cached records for this specific date
+      // to eliminate any duplicate entries.
+      const otherDateOrders = allOrders.filter(o => o.date !== dateStr);
+      
       const serverRows = data.rows.map(r => ({
         date: dateStr,
         time: r.time || '',
-        sticks: +r.sticks || 0,
+        sticks: computeSticksCount(r) || +r.sticks || 0,
         amount: +r.amount || 0,
         note: r.note || '',
         itemsDetail: r.itemsDetail || r['รายการ'] || r.items || '',
         itemsJson: r.itemsJson || ''
       }));
 
-      serverRows.forEach(sr => {
-        const exists = allOrders.some(lo => lo.date === sr.date && lo.time === sr.time && lo.amount === sr.amount);
-        if (!exists) {
-          allOrders.push(sr);
-        } else {
-          const match = allOrders.find(lo => lo.date === sr.date && lo.time === sr.time && lo.amount === sr.amount);
-          if (match) {
-            if (!match.itemsDetail && sr.itemsDetail) match.itemsDetail = sr.itemsDetail;
-            if (!match.sticks && sr.sticks) match.sticks = sr.sticks;
-          }
-        }
-      });
+      // Merge verified server rows with other date orders
+      allOrders = [...serverRows, ...otherDateOrders];
 
       saveLocalHistory();
       renderDateSelector();
@@ -2800,24 +2799,32 @@ async function fetchDateRowsFromSheet(dateStr) {
 }
 
 function refreshHistoryData() {
-  fetchFromSheet();
   fetchSummary();
-  toast('↻ อัปเดตข้อมูลจาก Google Sheets แล้ว');
+  if (selectedDateStr !== 'today' && selectedDateStr !== 'all') {
+    fetchDateRowsFromSheet(selectedDateStr);
+  } else {
+    fetchDateRowsFromSheet(getDateStr());
+  }
+  toast('↻ ซิงค์ยอดตรงกับ Google Sheet 100% แล้ว');
 }
 
 function updateDashboardSummary() {
   const todayStr = getDateStr();
   
   if (selectedDateStr === 'today' || selectedDateStr === todayStr) {
+    const sumToday = summaryData.find(s => s.date === todayStr);
     const todayOrders = allOrders.filter(r => r.date === todayStr);
-    const tot = todayOrders.reduce((s, r) => s + Number(r.amount || 0), 0);
-    const stks = todayOrders.reduce((s, r) => s + computeSticksCount(r), 0);
+    
+    // Use official summaryData if available, otherwise sum active orders
+    const tot = sumToday ? sumToday.total : todayOrders.reduce((s, r) => s + Number(r.amount || 0), 0);
+    const stks = sumToday ? sumToday.sticks : todayOrders.reduce((s, r) => s + computeSticksCount(r), 0);
+    const ords = sumToday ? sumToday.orders : todayOrders.length;
 
     document.getElementById('dash-date-label').textContent = 'ยอดขายวันนี้';
     document.getElementById('dash-date-badge').textContent = formatDateDisplay(todayStr);
     document.getElementById('dash-total').textContent = '฿' + tot.toLocaleString();
     document.getElementById('dash-sticks').textContent = stks.toLocaleString();
-    document.getElementById('dash-orders').textContent = todayOrders.length.toLocaleString();
+    document.getElementById('dash-orders').textContent = ords.toLocaleString();
   } else if (selectedDateStr === 'all') {
     const tot = summaryData.length > 0 ? summaryData.reduce((s,r) => s + r.total, 0) : allOrders.reduce((s, r) => s + Number(r.amount || 0), 0);
     const stks = summaryData.length > 0 ? summaryData.reduce((s,r) => s + r.sticks, 0) : allOrders.reduce((s, r) => s + computeSticksCount(r), 0);
@@ -2830,8 +2837,8 @@ function updateDashboardSummary() {
     document.getElementById('dash-orders').textContent = ords.toLocaleString();
   } else {
     // Specific date
-    const dateOrders = allOrders.filter(r => r.date === selectedDateStr);
     const sumMatch = summaryData.find(s => s.date === selectedDateStr);
+    const dateOrders = allOrders.filter(r => r.date === selectedDateStr);
     
     const tot = sumMatch ? sumMatch.total : dateOrders.reduce((s, r) => s + Number(r.amount || 0), 0);
     const stks = sumMatch ? sumMatch.sticks : dateOrders.reduce((s, r) => s + computeSticksCount(r), 0);
@@ -2868,11 +2875,10 @@ async function fetchSummary() {
 
     menuSummary = d.menuSummary || [];
     
-    // Automatically preload past dates
+    // Automatically preload all dates from summaryData
     if (summaryData.length > 0) {
-      const recentDates = summaryData.slice(-5).map(s => s.date);
-      for (let dt of recentDates) {
-        fetchDateRowsFromSheet(dt);
+      for (let s of summaryData) {
+        fetchDateRowsFromSheet(s.date);
       }
     }
     
@@ -3010,7 +3016,7 @@ function applyCustomDatePick() {
   closeModal('modal-date');
   if (!val) return;
   
-  // Val is YYYY-MM-DD in Gregorian CE (e.g. 2026-08-18)
+  // Val is YYYY-MM-DD in Gregorian CE (e.g. 2026-08-22)
   const parts = val.split('-');
   if (parts.length === 3) {
     const y = parseInt(parts[0]);
