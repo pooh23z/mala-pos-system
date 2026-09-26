@@ -1379,6 +1379,262 @@
       from { opacity: 0; transform: translateY(6px); }
       to { opacity: 1; transform: translateY(0); }
     }
+  
+    /* ─── STOCK & OUT OF STOCK STYLES ─── */
+    .btn-stock-top {
+      background: rgba(255, 165, 2, 0.12);
+      border: 1px solid rgba(255, 165, 2, 0.35);
+      color: #ffa502;
+      padding: 5px 12px;
+      border-radius: 99px;
+      font-family: inherit;
+      font-size: 12px;
+      font-weight: 700;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      transition: all 0.2s;
+    }
+    .btn-stock-top:hover {
+      background: #ffa502;
+      color: #000;
+      box-shadow: 0 4px 15px rgba(255, 165, 2, 0.4);
+    }
+
+    .stock-badge {
+      background: #ff4757;
+      color: #fff;
+      font-size: 10px;
+      font-weight: 800;
+      padding: 1px 6px;
+      border-radius: 99px;
+      min-width: 16px;
+      text-align: center;
+    }
+
+    .btn-stock-mode-toggle {
+      background: rgba(255, 255, 255, 0.06);
+      border: 1px solid var(--panel-border);
+      color: var(--text-sub);
+      padding: 4px 10px;
+      border-radius: 8px;
+      font-family: inherit;
+      font-size: 11px;
+      font-weight: 700;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      transition: all 0.2s;
+    }
+    .btn-stock-mode-toggle:hover {
+      background: rgba(255, 255, 255, 0.12);
+      color: #fff;
+    }
+    .btn-stock-mode-toggle.active {
+      background: #ff4757;
+      border-color: transparent;
+      color: #fff;
+      box-shadow: 0 0 12px var(--primary-glow);
+    }
+
+    .btn-stock-list-toggle {
+      background: rgba(255, 165, 2, 0.1);
+      border: 1px solid rgba(255, 165, 2, 0.25);
+      color: var(--accent);
+      padding: 4px 10px;
+      border-radius: 8px;
+      font-family: inherit;
+      font-size: 11px;
+      font-weight: 700;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      transition: all 0.2s;
+    }
+    .btn-stock-list-toggle:hover {
+      background: rgba(255, 165, 2, 0.2);
+      color: #fff;
+    }
+
+    .stock-mode-banner {
+      background: linear-gradient(90deg, #ff4757, #ff6b81);
+      color: #fff;
+      padding: 8px 14px;
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      font-size: 12px;
+      box-shadow: 0 4px 15px var(--primary-glow);
+      animation: fadeIn 0.2s ease;
+      margin-bottom: 8px;
+    }
+    .btn-exit-stock-mode {
+      background: #fff;
+      color: #000;
+      border: none;
+      padding: 4px 12px;
+      border-radius: 6px;
+      font-family: inherit;
+      font-size: 11px;
+      font-weight: 800;
+      cursor: pointer;
+      transition: 0.15s;
+    }
+    .btn-exit-stock-mode:hover { transform: scale(1.05); }
+
+    /* Out of Stock Card Styles */
+    .menu-card.out-of-stock {
+      opacity: 0.55;
+      filter: grayscale(0.75);
+      border-color: rgba(255, 71, 87, 0.4);
+      background: rgba(20, 24, 33, 0.7);
+    }
+    .menu-card.out-of-stock:hover {
+      transform: none;
+      filter: grayscale(0.5);
+    }
+    .menu-card.stock-mode-card {
+      box-shadow: 0 0 10px rgba(255, 165, 2, 0.3);
+    }
+
+    .sold-out-overlay {
+      position: absolute;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: rgba(10, 12, 16, 0.65);
+      backdrop-filter: blur(1.5px);
+      border-radius: var(--radius-md);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      z-index: 12;
+      pointer-events: none;
+    }
+    .sold-out-tag {
+      background: #ff4757;
+      color: #fff;
+      font-size: 11px;
+      font-weight: 800;
+      padding: 3px 8px;
+      border-radius: 99px;
+      box-shadow: 0 4px 10px rgba(255, 71, 87, 0.5);
+      letter-spacing: 0.5px;
+    }
+    .btn-quick-restock {
+      pointer-events: auto;
+      background: rgba(46, 213, 115, 0.2);
+      border: 1px solid #2ed573;
+      color: #2ed573;
+      font-size: 10px;
+      font-weight: 700;
+      padding: 2px 7px;
+      border-radius: 99px;
+      cursor: pointer;
+      transition: 0.15s;
+    }
+    .btn-quick-restock:hover {
+      background: #2ed573;
+      color: #000;
+    }
+
+    .stock-toggle-pill {
+      font-size: 10px;
+      font-weight: 800;
+      padding: 3px 6px;
+      border-radius: 6px;
+      margin-top: 4px;
+      text-align: center;
+    }
+    .stock-toggle-pill.sold {
+      background: rgba(255, 71, 87, 0.2);
+      border: 1px solid #ff4757;
+      color: #ff4757;
+    }
+    .stock-toggle-pill.in-stock {
+      background: rgba(46, 213, 115, 0.2);
+      border: 1px solid #2ed573;
+      color: #2ed573;
+    }
+
+    /* Stock Checklist in Modal */
+    .stock-checklist {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      max-height: 52vh;
+      overflow-y: auto;
+      margin-top: 10px;
+      padding-right: 4px;
+    }
+    .stock-item-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 8px 12px;
+      background: rgba(255,255,255,0.03);
+      border: 1px solid var(--panel-border);
+      border-radius: 10px;
+      transition: all 0.2s;
+    }
+    .stock-item-row.is-sold {
+      border-color: rgba(255, 71, 87, 0.35);
+      background: rgba(255, 71, 87, 0.05);
+    }
+    .stock-item-left {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .stock-thumb {
+      width: 32px;
+      height: 32px;
+      border-radius: 6px;
+      object-fit: cover;
+      background: rgba(0,0,0,0.3);
+    }
+    .stock-item-name {
+      font-size: 13px;
+      font-weight: 700;
+      color: #fff;
+    }
+    .stock-item-price {
+      font-size: 11px;
+      color: var(--accent);
+    }
+    .btn-toggle-stock-status {
+      padding: 6px 14px;
+      border-radius: 99px;
+      font-family: inherit;
+      font-size: 12px;
+      font-weight: 800;
+      cursor: pointer;
+      transition: all 0.2s;
+      border: none;
+    }
+    .btn-toggle-stock-status.in-stock {
+      background: rgba(46, 213, 115, 0.15);
+      border: 1px solid #2ed573;
+      color: #2ed573;
+    }
+    .btn-toggle-stock-status.in-stock:hover {
+      background: #2ed573;
+      color: #000;
+    }
+    .btn-toggle-stock-status.sold {
+      background: rgba(255, 71, 87, 0.2);
+      border: 1px solid #ff4757;
+      color: #ff4757;
+    }
+    .btn-toggle-stock-status.sold:hover {
+      background: #ff4757;
+      color: #fff;
+    }
+    
   </style>
 </head>
 <body>
@@ -1412,6 +1668,12 @@
 
     <!-- Top Actions -->
     <div class="top-actions">
+      <!-- Stock Modal Quick Button -->
+      <button class="btn-stock-top" onclick="openStockModal()" title="เช็คสต็อกและติ๊กของหมด">
+        <span>📦 สต็อก</span>
+        <span class="stock-badge" id="top-stock-badge" style="display:none;">0</span>
+      </button>
+
       <!-- Fast Paste from LINE Button -->
       <button class="btn-parse-line" onclick="openModal('modal-line-parse')">
         <span>📋</span> วางแชท LINE
@@ -1673,6 +1935,43 @@
 
 <!-- ================= MODALS ================= -->
 
+<!-- STOCK MANAGEMENT MODAL -->
+<div class="modal-overlay" id="modal-stock">
+  <div class="modal-content" style="max-width: 460px;">
+    <div class="modal-title">
+      <div style="display:flex; align-items:center; gap:8px;">
+        <span>📦 เช็คสต็อก & ติ๊กของหมด</span>
+        <span class="stock-badge" id="modal-stock-badge" style="display:none;">0</span>
+      </div>
+      <button class="btn-icon" onclick="closeModal('modal-stock')" style="width:26px; height:26px;">✕</button>
+    </div>
+    
+    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px; font-size:12px; color:var(--text-muted);">
+      <span id="stock-status-summary">กำลังโหลดสต็อก...</span>
+      <button onclick="resetAllStock()" style="background:rgba(46,213,115,0.12); border:1px solid #2ed573; color:#2ed573; font-family:inherit; font-size:11px; font-weight:700; padding:3px 10px; border-radius:99px; cursor:pointer;">
+        ✨ มีของทั้งหมด
+      </button>
+    </div>
+
+    <!-- Quick search inside stock modal -->
+    <div class="hist-search-box" style="margin-bottom:6px;">
+      <span class="hist-search-icon">🔍</span>
+      <input type="text" id="stock-search-input" placeholder="ค้นหาเมนูในสต็อก..." oninput="renderStockChecklist()">
+    </div>
+
+    <!-- Stock checklist rows -->
+    <div class="stock-checklist" id="stock-checklist">
+      <!-- Injected via JS -->
+    </div>
+
+    <div class="modal-actions" style="margin-top:14px;">
+      <button class="btn-modal btn-confirm" onclick="closeModal('modal-stock')" style="background:linear-gradient(135deg, var(--accent), #ff793f); color:#000;">
+        ตกลง / ปิดหน้าต่าง
+      </button>
+    </div>
+  </div>
+</div>
+
 <!-- SMART LINE OA PARSER MODAL -->
 <div class="modal-overlay" id="modal-line-parse">
   <div class="modal-content">
@@ -1809,6 +2108,8 @@ let customCartItems = []; // [{ id, name, price, qty }]
 let currentPriceFilter = 'all'; // 'all', '6', '7', '10', '13'
 let selectedDateStr = 'today'; // 'today', 'all', or '22082569'
 let allOrders = []; // Persistent order records merged from server (Master Source of Truth)
+let outOfStockItems = []; // List of item ids currently out of stock
+let isStockMode = false; // Toggle for in-place edit mode on menu grid
 let summaryData = [];
 let menuSummary = [];
 let costRounds = [];
@@ -1823,9 +2124,170 @@ const chartColors = [
 ];
 
 /* ─── INITIALIZATION ─── */
+/* ─── OUT OF STOCK & STOCK MANAGEMENT ─── */
+function loadStockState() {
+  try {
+    const saved = localStorage.getItem('mala_out_of_stock');
+    if (saved) {
+      outOfStockItems = JSON.parse(saved);
+      if (!Array.isArray(outOfStockItems)) outOfStockItems = [];
+    }
+  } catch(e) {
+    outOfStockItems = [];
+  }
+  updateStockBadge();
+}
+
+function saveStockState() {
+  try {
+    localStorage.setItem('mala_out_of_stock', JSON.stringify(outOfStockItems));
+  } catch(e) {}
+  updateStockBadge();
+}
+
+function isOutOfStock(id) {
+  return outOfStockItems.includes(id);
+}
+
+function toggleStock(id, e) {
+  if (e) e.stopPropagation();
+  playHaptic('tap');
+  const idx = outOfStockItems.indexOf(id);
+  if (idx > -1) {
+    outOfStockItems.splice(idx, 1);
+    toast('🟢 ' + id + ' มีของพร้อมขายแล้ว');
+  } else {
+    outOfStockItems.push(id);
+    if (cart[id]) {
+      delete cart[id];
+      updateCartUI();
+    }
+    toast('🔴 ' + id + ' ติ๊กเป็น [ของหมด]');
+  }
+  saveStockState();
+  renderGroupedMenu();
+  renderStockChecklist();
+}
+
+function resetAllStock() {
+  playHaptic('success');
+  outOfStockItems = [];
+  saveStockState();
+  renderGroupedMenu();
+  renderStockChecklist();
+  toast('🎉 ปรับทุกเมนูเป็น [มีของพร้อมขาย] แล้ว!');
+}
+
+function updateStockBadge() {
+  const count = outOfStockItems.length;
+  const badge = document.getElementById('stock-out-count');
+  if (badge) {
+    badge.textContent = count;
+    badge.style.display = count > 0 ? 'inline-block' : 'none';
+  }
+  const topBadge = document.getElementById('top-stock-badge');
+  if (topBadge) {
+    topBadge.textContent = count;
+    topBadge.style.display = count > 0 ? 'inline-block' : 'none';
+  }
+}
+
+function toggleStockMode() {
+  isStockMode = !isStockMode;
+  playHaptic('tap');
+  const btn = document.getElementById('btn-stock-mode');
+  const banner = document.getElementById('stock-mode-banner');
+  if (isStockMode) {
+    if (btn) {
+      btn.classList.add('active');
+      btn.innerHTML = '<span>✓ ออกจากโหมด</span>';
+    }
+    if (banner) banner.style.display = 'flex';
+    toast('✏️ เข้าสู่โหมดติ๊กของหมด (แตะเมนูเพื่อสลับสถานะ)');
+  } else {
+    if (btn) {
+      btn.classList.remove('active');
+      btn.innerHTML = '<span>✏️ ติ๊กของหมด</span>';
+    }
+    if (banner) banner.style.display = 'none';
+  }
+  renderGroupedMenu();
+}
+
+function handleCardClick(id) {
+  if (isStockMode) {
+    toggleStock(id);
+  } else {
+    addToCart(id);
+  }
+}
+
+function openStockModal() {
+  renderStockChecklist();
+  openModal('modal-stock');
+}
+
+function renderStockChecklist() {
+  const container = document.getElementById('stock-checklist');
+  if (!container) return;
+
+  const searchQ = (document.getElementById('stock-search-input')?.value || '').trim().toLowerCase();
+  let list = MENU;
+
+  if (searchQ) {
+    list = list.filter(m => {
+      const q = searchQ;
+      const id = m.id.toLowerCase();
+      if (id.includes(q)) return true;
+      if (id === 'ฟักทอง' && (q.includes('พัก') || 'พักทอง'.includes(q))) return true;
+      return false;
+    });
+  }
+
+  const outCount = outOfStockItems.length;
+  const inCount = MENU.length - outCount;
+  const sumEl = document.getElementById('stock-status-summary');
+  if (sumEl) {
+    sumEl.innerHTML = `🟢 มีของ <b>${inCount}</b> / 🔴 หมด <b>${outCount}</b> จาก ${MENU.length} เมนู`;
+  }
+  const modalBadge = document.getElementById('modal-stock-badge');
+  if (modalBadge) {
+    modalBadge.textContent = outCount;
+    modalBadge.style.display = outCount > 0 ? 'inline-block' : 'none';
+  }
+
+  if (list.length === 0) {
+    container.innerHTML = '<div class="empty-msg" style="padding:20px;">ไม่พบเมนูที่ค้นหา</div>';
+    return;
+  }
+
+  container.innerHTML = list.map(m => {
+    const sold = isOutOfStock(m.id);
+    const thumbHtml = m.img 
+      ? `<img src="${m.img}" class="stock-thumb" alt="${m.id}">`
+      : `<div class="stock-thumb" style="display:flex;align-items:center;justify-content:center;font-size:18px;">${m.emoji || '🍢'}</div>`;
+
+    return `
+      <div class="stock-item-row ${sold ? 'is-sold' : ''}">
+        <div class="stock-item-left">
+          ${thumbHtml}
+          <div>
+            <div class="stock-item-name">${m.id}</div>
+            <div class="stock-item-price">฿${m.price}</div>
+          </div>
+        </div>
+        <button class="btn-toggle-stock-status ${sold ? 'sold' : 'in-stock'}" onclick="toggleStock('${m.id}')">
+          ${sold ? '🔴 ของหมด' : '🟢 มีของ'}
+        </button>
+      </div>
+    `;
+  }).join('');
+}
+
 function init() {
   loadConfig();
   loadLocalHistory();
+  loadStockState();
   renderGroupedMenu();
   renderEmptyChart();
   
@@ -2041,12 +2503,41 @@ function renderGroupedMenu() {
               </div>
             `;
 
+            const soldOut = isOutOfStock(m.id);
+            let cardBottomHtml = '';
+            if (isStockMode) {
+              cardBottomHtml = soldOut 
+                ? `<div class="stock-toggle-pill sold">🔴 หมด (แตะสลับ)</div>`
+                : `<div class="stock-toggle-pill in-stock">🟢 มีของ (แตะสลับ)</div>`;
+            } else if (soldOut) {
+              cardBottomHtml = `
+                <div style="display:flex; justify-content:center; align-items:center; gap:4px; margin-top:2px;">
+                  <button class="btn-quick-restock" onclick="toggleStock('${m.id}', event)" title="ติ๊กกลับว่ามีของแล้ว">มีของแล้ว ✓</button>
+                </div>
+              `;
+            } else if (qty > 0) {
+              cardBottomHtml = stepperHtml;
+            } else {
+              cardBottomHtml = `
+                <div>
+                  <span class="price-pill">฿${m.price}</span>
+                </div>
+              `;
+            }
+
+            const overlayHtml = (!isStockMode && soldOut) 
+              ? `<div class="sold-out-overlay"><span class="sold-out-tag">⛔ หมด</span></div>` 
+              : '';
+
             return `
-              <div class="menu-card" onclick="addToCart('${m.id}')" style="animation: fadeIn 0.25s ease ${i*0.02}s both">
+              <div class="menu-card ${soldOut ? 'out-of-stock' : ''} ${isStockMode ? 'stock-mode-card' : ''}" 
+                   onclick="handleCardClick('${m.id}')" 
+                   style="animation: fadeIn 0.25s ease ${i*0.02}s both">
                 ${badgeHtml}
+                ${overlayHtml}
                 <div class="img-wrap">${imgHtml}</div>
                 <div class="name" title="${m.id}">${m.id}</div>
-                ${stepperHtml}
+                ${cardBottomHtml}
               </div>
             `;
           }).join('')}
@@ -2265,6 +2756,7 @@ function parseAndAddLineText() {
   const lines = text.split(/\r?\n|,/);
   let matchedCount = 0;
   let detectedNotes = [];
+  let skippedOutOfStock = [];
 
   const noteKeywords = ['เผ็ดน้อย', 'เผ็ดกลาง', 'เผ็ดมาก', 'ไม่เผ็ด', 'พริกน้อย', 'พริกมาก', 'แยกพริก', 'ใส่ถุง', 'กลับบ้าน'];
 
@@ -2309,8 +2801,12 @@ function parseAndAddLineText() {
     }
 
     if (matchedItem) {
-      cart[matchedItem] = (cart[matchedItem] || 0) + (qty || 1);
-      matchedCount++;
+      if (isOutOfStock(matchedItem)) {
+        if (!skippedOutOfStock.includes(matchedItem)) skippedOutOfStock.push(matchedItem);
+      } else {
+        cart[matchedItem] = (cart[matchedItem] || 0) + (qty || 1);
+        matchedCount++;
+      }
     }
   });
 
@@ -2325,8 +2821,16 @@ function parseAndAddLineText() {
     playHaptic('success');
     toast(`🎉 แปลงข้อความและเพิ่ม ${matchedCount} รายการลงออเดอร์แล้ว!`);
     updateCartUI();
+  } else if (skippedOutOfStock.length > 0) {
+    toast('⛔ เมนูที่สั่งของหมด: ' + skippedOutOfStock.join(', '), true);
   } else {
     toast('⚠️ ไม่พบชื่อเมนูที่ตรงกับรายการ กรุณาแตะเลือกเอง');
+  }
+
+  if (skippedOutOfStock.length > 0 && matchedCount > 0) {
+    setTimeout(() => {
+      toast('⛔ เมนูของหมด: ' + skippedOutOfStock.join(', ') + ' (ไม่ได้เพิ่มลงออเดอร์)', true);
+    }, 1800);
   }
 }
 
