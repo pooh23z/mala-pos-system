@@ -1497,6 +1497,17 @@
       transform: none;
       filter: grayscale(0.5);
     }
+    
+    @keyframes shakeCard {
+      0%, 100% { transform: translateX(0); }
+      20%, 60% { transform: translateX(-6px); }
+      40%, 80% { transform: translateX(6px); }
+    }
+    .menu-card.shake {
+      animation: shakeCard 0.4s ease !important;
+      border-color: #ff4757 !important;
+    }
+    
     .menu-card.stock-mode-card {
       box-shadow: 0 0 10px rgba(255, 165, 2, 0.3);
     }
@@ -2135,6 +2146,9 @@ function loadStockState() {
   } catch(e) {
     outOfStockItems = [];
   }
+  outOfStockItems.forEach(id => {
+    if (cart[id]) delete cart[id];
+  });
   updateStockBadge();
 }
 
@@ -2214,12 +2228,26 @@ function toggleStockMode() {
   renderGroupedMenu();
 }
 
-function handleCardClick(id) {
+function handleCardClick(id, event) {
   if (isStockMode) {
-    toggleStock(id);
-  } else {
-    addToCart(id);
+    toggleStock(id, event);
+    return;
   }
+  if (isOutOfStock(id)) {
+    if (event) event.stopPropagation();
+    playHaptic('tap');
+    toast('⛔ เมนู "' + id + '" ของหมดชั่วคราว ไม่สามารถคีย์ได้', true);
+    
+    if (event && event.currentTarget) {
+      const card = event.currentTarget;
+      card.classList.remove('shake');
+      void card.offsetWidth;
+      card.classList.add('shake');
+      setTimeout(() => card.classList.remove('shake'), 450);
+    }
+    return;
+  }
+  addToCart(id);
 }
 
 function openStockModal() {
@@ -2486,7 +2514,7 @@ function renderGroupedMenu() {
         <div class="price-items-grid">
           ${itemsInTier.map((m, i) => {
             const qty = cart[m.id] || 0;
-            const badgeHtml = qty > 0 ? `<div class="badge">${qty}</div>` : '';
+            const badgeHtml = (!soldOut && qty > 0) ? `<div class="badge">${qty}</div>` : '';
             const imgHtml = m.img 
               ? `<img src="${m.img}" alt="${m.id}" loading="lazy">` 
               : `<span class="emoji">${m.emoji || '🍢'}</span>`;
@@ -2511,7 +2539,7 @@ function renderGroupedMenu() {
                 : `<div class="stock-toggle-pill in-stock">🟢 มีของ (แตะสลับ)</div>`;
             } else if (soldOut) {
               cardBottomHtml = `
-                <div style="display:flex; justify-content:center; align-items:center; gap:4px; margin-top:2px;">
+                <div style="display:flex; justify-content:center; align-items:center; gap:4px; margin-top:2px;" onclick="event.stopPropagation()">
                   <button class="btn-quick-restock" onclick="toggleStock('${m.id}', event)" title="ติ๊กกลับว่ามีของแล้ว">มีของแล้ว ✓</button>
                 </div>
               `;
@@ -2531,7 +2559,7 @@ function renderGroupedMenu() {
 
             return `
               <div class="menu-card ${soldOut ? 'out-of-stock' : ''} ${isStockMode ? 'stock-mode-card' : ''}" 
-                   onclick="handleCardClick('${m.id}')" 
+                   onclick="handleCardClick('${m.id}', event)" 
                    style="animation: fadeIn 0.25s ease ${i*0.02}s both">
                 ${badgeHtml}
                 ${overlayHtml}
@@ -2573,6 +2601,15 @@ function clearSearch() {
 
 /* ─── CART MANAGEMENT ─── */
 function addToCart(id) {
+  if (isStockMode) {
+    toggleStock(id);
+    return;
+  }
+  if (isOutOfStock(id)) {
+    playHaptic('tap');
+    toast('⛔ เมนู "' + id + '" ของหมดชั่วคราว ไม่สามารถคีย์ได้', true);
+    return;
+  }
   playHaptic('click');
   cart[id] = (cart[id] || 0) + 1;
   updateCartUI();
@@ -2580,6 +2617,10 @@ function addToCart(id) {
 
 function updateCartQty(id, delta) {
   playHaptic('tap');
+  if (delta > 0 && isOutOfStock(id)) {
+    toast('⛔ เมนู "' + id + '" ของหมดแล้ว ไม่สามารถเพิ่มได้', true);
+    return;
+  }
   if (cart[id] !== undefined) {
     cart[id] += delta;
     if (cart[id] <= 0) delete cart[id];
@@ -3186,6 +3227,12 @@ function renderRecentOrders() {
 
 /* ─── 1-CLICK ORDER SUBMISSION ─── */
 async function submitSale() {
+  const outOfStockInCart = Object.keys(cart).filter(id => isOutOfStock(id));
+  if (outOfStockInCart.length > 0) {
+    toast('⛔ เมนู ' + outOfStockInCart.join(', ') + ' ของหมด กรุณาลบออกจากตะกร้าก่อนบันทึก', true);
+    return;
+  }
+
   const btn = document.getElementById('btn-save-order');
   btn.disabled = true;
   btn.innerHTML = '<span>⏳ กำลังบันทึก...</span>';
