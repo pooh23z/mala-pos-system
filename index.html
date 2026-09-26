@@ -2513,25 +2513,13 @@ function renderGroupedMenu() {
 
         <div class="price-items-grid">
           ${itemsInTier.map((m, i) => {
-            const qty = cart[m.id] || 0;
+            const soldOut = isOutOfStock(m.id);
+            const qty = soldOut ? 0 : (cart[m.id] || 0);
             const badgeHtml = (!soldOut && qty > 0) ? `<div class="badge">${qty}</div>` : '';
             const imgHtml = m.img 
               ? `<img src="${m.img}" alt="${m.id}" loading="lazy">` 
               : `<span class="emoji">${m.emoji || '🍢'}</span>`;
 
-            const stepperHtml = qty > 0 ? `
-              <div class="card-stepper" onclick="event.stopPropagation()">
-                <button class="card-step-btn" onclick="updateCartQty('${m.id}', -1)">−</button>
-                <span class="card-step-qty">${qty}</span>
-                <button class="card-step-btn" onclick="updateCartQty('${m.id}', 1)">+</button>
-              </div>
-            ` : `
-              <div>
-                <span class="price-pill">฿${m.price}</span>
-              </div>
-            `;
-
-            const soldOut = isOutOfStock(m.id);
             let cardBottomHtml = '';
             if (isStockMode) {
               cardBottomHtml = soldOut 
@@ -2544,7 +2532,13 @@ function renderGroupedMenu() {
                 </div>
               `;
             } else if (qty > 0) {
-              cardBottomHtml = stepperHtml;
+              cardBottomHtml = `
+                <div class="card-stepper" onclick="event.stopPropagation()">
+                  <button class="card-step-btn" onclick="updateCartQty('${m.id}', -1)">−</button>
+                  <span class="card-step-qty">${qty}</span>
+                  <button class="card-step-btn" onclick="updateCartQty('${m.id}', 1)">+</button>
+                </div>
+              `;
             } else {
               cardBottomHtml = `
                 <div>
