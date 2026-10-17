@@ -3136,7 +3136,7 @@ function copyOrderForLine() {
       const subtotal = m.price * qty;
       totalSticks += qty;
       totalAmt += subtotal;
-      itemsText.push(`🍢 ${m.id} × ${qty} = ฿${subtotal}`);
+      itemsText.push(`🍢 ${m.id} × ${qty} ไม้ = ฿${subtotal.toLocaleString()}`);
     }
   });
 
@@ -3144,53 +3144,64 @@ function copyOrderForLine() {
     const subtotal = c.price * c.qty;
     totalSticks += c.qty;
     totalAmt += subtotal;
-    itemsText.push(`⭐ ${c.name} × ${c.qty} = ฿${subtotal}`);
+    itemsText.push(`⭐ ${c.name} × ${c.qty} ไม้ = ฿${subtotal.toLocaleString()}`);
   });
 
   const note = document.getElementById('f-note').value.trim();
 
-  let text = `🔥 [สรุปออเดอร์หม่าล่าทอด] 🔥\n`;
+  let text = `🔥 สรุปออเดอร์หม่าล่าทอด 🔥\n`;
   text += itemsText.join('\n') + '\n';
-  text += `--------------------------\n`;
-  text += `🍢 รวมทั้งหมด: ${totalSticks} ไม้\n`;
-  text += `💰 ยอดโอนสุทธิ: ฿${totalAmt.toLocaleString()}\n`;
-  if (note) text += `💬 หมายเหตุ: ${note}\n`;
-  text += `--------------------------\n`;
-  text += `ขอบคุณมากค่ะ ร้านกำลังเร่งทำให้นะคะ! ✨`;
+  if (note) {
+    text += `💬 หมายเหตุ: ${note}\n`;
+  }
+  text += `\n👉👉 ยอดรวมทั้งหมด ฿${totalAmt.toLocaleString()} บาท 👈👈\n\n`;
+  text += `ขอบคุณค่ะ กำลังทำให้นะคะ ✨\n`;
+  text += `เสม & Friends`;
 
-  navigator.clipboard.writeText(text).then(() => {
-    playHaptic('success');
-    toast('📋 คัดลอกสรุปรายการสำหรับส่งตอบ LINE แล้ว!');
-  }).catch(() => {
-    toast('❌ คัดลอกไม่สำเร็จ');
-  });
+  copyTextToClipboard(text, '📋 คัดลอกสรุปออเดอร์ส่ง LINE เรียบร้อย!');
 }
 
 function copySingleOrderToLine(idx) {
   const order = allOrders[idx];
   if (!order) return;
 
-  let text = `🔥 [สรุปออเดอร์หม่าล่าทอด] 🔥\n`;
-  text += `🕒 เวลา: ${formatTimeDisplay(order.time)}\n`;
-  if (order.itemsDetail) {
+  let itemsText = [];
+  if (order.itemsJson) {
+    try {
+      const parsed = JSON.parse(order.itemsJson);
+      parsed.forEach(it => {
+        itemsText.push(`🍢 ${it.name} × ${it.qty} ไม้ = ฿${Number(it.subtotal || it.price * it.qty).toLocaleString()}`);
+      });
+    } catch(e) {}
+  }
+  
+  if (itemsText.length === 0 && order.itemsDetail) {
     const items = order.itemsDetail.split(',');
     items.forEach(it => {
-      text += `🍢 ${it.trim()}\n`;
+      const clean = it.trim();
+      const match = clean.match(/(.+?)\s*[×x*]\s*(\d+)/);
+      if (match) {
+        const name = match[1].trim();
+        const qty = parseInt(match[2]);
+        const m = MENU.find(x => x.id === name);
+        const subtotal = m ? m.price * qty : '';
+        itemsText.push(`🍢 ${name} × ${qty} ไม้${subtotal ? ` = ฿${subtotal.toLocaleString()}` : ''}`);
+      } else {
+        itemsText.push(`🍢 ${clean}`);
+      }
     });
   }
-  text += `--------------------------\n`;
-  text += `🍢 จำนวนไม้: ${computeSticksCount(order)} ไม้\n`;
-  text += `💰 ยอดโอน: ฿${Number(order.amount).toLocaleString()}\n`;
-  if (order.note) text += `💬 หมายเหตุ: ${order.note}\n`;
-  text += `--------------------------\n`;
-  text += `ขอบคุณมากค่ะ ✨`;
 
-  navigator.clipboard.writeText(text).then(() => {
-    playHaptic('success');
-    toast('📋 คัดลอกสรุปออเดอร์นี้เรียบร้อย!');
-  }).catch(() => {
-    toast('❌ คัดลอกไม่สำเร็จ');
-  });
+  let text = `🔥 สรุปออเดอร์หม่าล่าทอด 🔥\n`;
+  text += itemsText.join('\n') + '\n';
+  if (order.note && order.note !== 'LINE OA') {
+    text += `💬 หมายเหตุ: ${order.note}\n`;
+  }
+  text += `\n👉👉 ยอดรวมทั้งหมด ฿${Number(order.amount || 0).toLocaleString()} บาท 👈👈\n\n`;
+  text += `ขอบคุณค่ะ กำลังทำให้นะคะ ✨\n`;
+  text += `เสม & Friends`;
+
+  copyTextToClipboard(text, '📋 คัดลอกสรุปออเดอร์นี้เรียบร้อย!');
 }
 
 function reorderToCart(idx) {
