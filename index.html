@@ -2531,20 +2531,17 @@ function fallbackCopyText(text, successMsg) {
 
 function copyOutOfStockForLine() {
   if (outOfStockItems.length === 0) {
-    const text = `🔥 [อัปเดตเมนูหม่าล่าทอดวันนี้] 🔥\n✨ วันนี้ของเข้าครบทุกเมนู พร้อมเสิร์ฟทุกรายการค่ะ!\n🍢 สั่งได้เลยนะคะ ทางร้านกำลังเร่งทำออเดอร์ค่ะ ✨`;
+    const text = `🔥 อัปเดตเมนูหม่าล่าทอดวันนี้ 🔥\n✨ วันนี้ของเข้าครบทุกเมนู พร้อมเสิร์ฟทุกรายการครับ!\n🍢 สั่งได้เลยนะครับ ทางร้านกำลังเร่งทำออเดอร์ครับ ✨`;
     copyTextToClipboard(text, '📋 คัดลอก: วันนี้ของมีครบทุกเมนูแล้ว');
     return;
   }
 
-  let text = `⛔ [แจ้งเมนูหม่าล่าทอดที่หมดวันนี้] ⛔\n`;
+  let text = `⛔ เมนูหม่าล่าทอดที่หมดวันนี้ ⛔\n`;
   outOfStockItems.forEach(id => {
-    const m = MENU.find(x => x.id === id);
-    const priceStr = m ? ` (${m.price}฿)` : '';
-    text += `❌ ${id}${priceStr}\n`;
+    text += `❌ ${id}\n`;
   });
-  text += `--------------------------\n`;
-  text += `🍢 เมนูอื่นๆ มีพร้อมเสิร์ฟครบตามปกติค่ะ\n`;
-  text += `✨ พิมพ์สั่งจำนวนไม้ที่ต้องการได้เลยนะคะ! ✨`;
+  text += `\n🍢 เมนูอื่นๆ มีพร้อมเสิร์ฟตามปกติครับ\n`;
+  text += `✨ พิมพ์สั่งจำนวนไม้ได้เลยนะครับ ✨`;
 
   copyTextToClipboard(text, `📋 คัดลอกรายการของหมด (${outOfStockItems.length} เมนู) ส่ง LINE แล้ว!`);
 }
@@ -2552,7 +2549,7 @@ function copyOutOfStockForLine() {
 function copyInStockForLine() {
   const inStockItems = MENU.filter(m => !isOutOfStock(m.id));
   if (inStockItems.length === 0) {
-    const text = `🔥 [แจ้งสถานะร้านหม่าล่าทอด] 🔥\n⛔ วันนี้เมนูหมดทุกรายการแล้วนะคะ ขออภัยลูกค้าด้วยค่ะ\nเจอกันใหม่รอบหน้านะคะ ขอบคุณค่ะ 🙏✨`;
+    const text = `🔥 แจ้งสถานะร้านหม่าล่าทอด 🔥\n⛔ วันนี้เมนูหมดทุกรายการแล้วนะครับ ขออภัยลูกค้าด้วยครับ\nเจอกันใหม่รอบหน้านะครับ ขอบคุณครับ 🙏✨`;
     copyTextToClipboard(text, '📋 คัดลอก: วันนี้ของหมดทุกรายการแล้ว');
     return;
   }
@@ -2564,7 +2561,7 @@ function copyInStockForLine() {
     { price: 13, label: '🔴 ไม้ 13 บาท' }
   ];
 
-  let text = `🔥 [เมนูหม่าล่าทอดพร้อมเสิร์ฟวันนี้] 🔥\n`;
+  let text = `🔥 เมนูหม่าล่าทอดพร้อมเสิร์ฟวันนี้ 🔥\n`;
   tiers.forEach(t => {
     const items = inStockItems.filter(m => m.price === t.price);
     if (items.length > 0) {
@@ -2575,7 +2572,7 @@ function copyInStockForLine() {
 
   text += `--------------------------\n`;
   text += `🍢 เลือกระดับความเผ็ด: เผ็ดน้อย / กลาง / มาก / ไม่เผ็ด\n`;
-  text += `💬 พิมพ์เมนูและจำนวนส่งมาได้เลยค่ะ แม่ค้ากำลังเร่งทำให้นะคะ! ✨`;
+  text += `💬 พิมพ์เมนูและจำนวนส่งมาได้เลยครับ ทางร้านกำลังเร่งทำให้นะครับ! ✨`;
 
   copyTextToClipboard(text, `📋 คัดลอกเมนูพร้อมเสิร์ฟ (${inStockItems.length} เมนู) ส่ง LINE แล้ว!`);
 }
@@ -2607,11 +2604,11 @@ function copyFullStockSummaryForLine() {
       text += `❌ ${id}\n`;
     });
   } else {
-    text += `\n✨ วันนี้ของมีครบทุกเมนู ไม่มีของหมดค่ะ\n`;
+    text += `\n✨ วันนี้ของมีครบทุกเมนู ไม่มีของหมดครับ\n`;
   }
 
   text += `--------------------------\n`;
-  text += `💬 พิมพ์สั่งออเดอร์มาได้เลยนะคะ ยินดีให้บริการค่ะ! ✨`;
+  text += `💬 พิมพ์สั่งออเดอร์มาได้เลยนะครับ ยินดีให้บริการครับ! ✨`;
 
   copyTextToClipboard(text, '📋 คัดลอกสรุปเมนูทั้งมี/หมด สำหรับส่ง LINE แล้ว!');
 }
@@ -3208,7 +3205,7 @@ function copyOrderForLine() {
     text += `💬 หมายเหตุ: ${note}\n`;
   }
   text += `\n👉👉 ยอดรวมทั้งหมด ฿${totalAmt.toLocaleString()} บาท 👈👈\n\n`;
-  text += `ขอบคุณค่ะ กำลังทำให้นะคะ ✨\n`;
+  text += `ขอบคุณครับ กำลังทำให้นะครับ ✨\n`;
   text += `เสม & Friends`;
 
   copyTextToClipboard(text, '📋 คัดลอกสรุปออเดอร์ส่ง LINE เรียบร้อย!');
@@ -3251,7 +3248,7 @@ function copySingleOrderToLine(idx) {
     text += `💬 หมายเหตุ: ${order.note}\n`;
   }
   text += `\n👉👉 ยอดรวมทั้งหมด ฿${Number(order.amount || 0).toLocaleString()} บาท 👈👈\n\n`;
-  text += `ขอบคุณค่ะ กำลังทำให้นะคะ ✨\n`;
+  text += `ขอบคุณครับ กำลังทำให้นะครับ ✨\n`;
   text += `เสม & Friends`;
 
   copyTextToClipboard(text, '📋 คัดลอกสรุปออเดอร์นี้เรียบร้อย!');
