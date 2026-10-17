@@ -3205,8 +3205,7 @@ function copyOrderForLine() {
     text += `💬 หมายเหตุ: ${note}\n`;
   }
   text += `\n👉👉 ยอดรวมทั้งหมด ฿${totalAmt.toLocaleString()} บาท 👈👈\n\n`;
-  text += `ขอบคุณครับ กำลังทำให้นะครับ ✨\n`;
-  text += `เสม & Friends`;
+  text += `รับออเดอร์แล้วครับ ขอบคุณครับ ✨`;
 
   copyTextToClipboard(text, '📋 คัดลอกสรุปออเดอร์ส่ง LINE เรียบร้อย!');
 }
@@ -3248,8 +3247,7 @@ function copySingleOrderToLine(idx) {
     text += `💬 หมายเหตุ: ${order.note}\n`;
   }
   text += `\n👉👉 ยอดรวมทั้งหมด ฿${Number(order.amount || 0).toLocaleString()} บาท 👈👈\n\n`;
-  text += `ขอบคุณครับ กำลังทำให้นะครับ ✨\n`;
-  text += `เสม & Friends`;
+  text += `รับออเดอร์แล้วครับ ขอบคุณครับ ✨`;
 
   copyTextToClipboard(text, '📋 คัดลอกสรุปออเดอร์นี้เรียบร้อย!');
 }
