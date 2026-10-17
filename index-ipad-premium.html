@@ -1714,6 +1714,64 @@
       transform: scale(0.97);
     }
     
+  
+    .btn-stock-pill {
+      background: rgba(255, 165, 2, 0.15);
+      border: 1px solid rgba(255, 165, 2, 0.4);
+      color: #ffa502;
+      padding: 5px 11px;
+      border-radius: 99px;
+      font-family: inherit;
+      font-size: 11px;
+      font-weight: 700;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      transition: all 0.2s;
+      white-space: nowrap;
+    }
+    .btn-stock-pill:hover {
+      background: #ffa502;
+      color: #000;
+      box-shadow: 0 4px 12px rgba(255, 165, 2, 0.4);
+    }
+
+    .btn-line-header {
+      padding: 5px 10px;
+      border-radius: 99px;
+      font-family: inherit;
+      font-size: 11px;
+      font-weight: 700;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      transition: all 0.2s;
+      white-space: nowrap;
+      border: 1px solid transparent;
+    }
+    .btn-line-header.sold {
+      background: rgba(255, 71, 87, 0.15);
+      border-color: rgba(255, 71, 87, 0.4);
+      color: #ff6b81;
+    }
+    .btn-line-header.sold:hover {
+      background: #ff4757;
+      color: #fff;
+      box-shadow: 0 4px 12px rgba(255, 71, 87, 0.4);
+    }
+    .btn-line-header.in-stock {
+      background: rgba(46, 213, 115, 0.15);
+      border-color: rgba(46, 213, 115, 0.4);
+      color: #2ed573;
+    }
+    .btn-line-header.in-stock:hover {
+      background: #2ed573;
+      color: #000;
+      box-shadow: 0 4px 12px rgba(46, 213, 115, 0.4);
+    }
+    
   </style>
 </head>
 <body>
