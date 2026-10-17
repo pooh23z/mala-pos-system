@@ -1646,6 +1646,74 @@
       color: #fff;
     }
     
+  
+    /* ─── LINE STOCK COPY SECTION ─── */
+    .line-copy-section {
+      background: rgba(0, 0, 0, 0.4);
+      border: 1px solid rgba(6, 199, 85, 0.3);
+      border-radius: 12px;
+      padding: 10px 12px;
+      margin-bottom: 12px;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+    }
+    .line-copy-btn-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 6px;
+    }
+    .btn-line-copy {
+      padding: 9px 8px;
+      border-radius: 8px;
+      font-family: inherit;
+      font-size: 11px;
+      font-weight: 700;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 5px;
+      transition: all 0.2s;
+      border: 1px solid transparent;
+      text-align: center;
+    }
+    .btn-line-copy.sold {
+      background: rgba(255, 71, 87, 0.12);
+      border-color: rgba(255, 71, 87, 0.35);
+      color: #ff6b81;
+    }
+    .btn-line-copy.sold:hover {
+      background: #ff4757;
+      color: #fff;
+      box-shadow: 0 4px 12px rgba(255, 71, 87, 0.4);
+      transform: translateY(-1px);
+    }
+    .btn-line-copy.in-stock {
+      background: rgba(46, 213, 115, 0.12);
+      border-color: rgba(46, 213, 115, 0.35);
+      color: #2ed573;
+    }
+    .btn-line-copy.in-stock:hover {
+      background: #2ed573;
+      color: #000;
+      box-shadow: 0 4px 12px rgba(46, 213, 115, 0.4);
+      transform: translateY(-1px);
+    }
+    .btn-line-copy.all {
+      grid-column: span 2;
+      background: rgba(255, 165, 2, 0.12);
+      border-color: rgba(255, 165, 2, 0.35);
+      color: #ffa502;
+    }
+    .btn-line-copy.all:hover {
+      background: #ffa502;
+      color: #000;
+      box-shadow: 0 4px 12px rgba(255, 165, 2, 0.4);
+      transform: translateY(-1px);
+    }
+    .btn-line-copy:active {
+      transform: scale(0.97);
+    }
+    
   </style>
 </head>
 <body>
@@ -2310,6 +2378,131 @@ function renderStockChecklist() {
       </div>
     `;
   }).join('');
+}
+
+
+/* ─── COPY STOCK TO LINE CLIPBOARD FUNCTIONS ─── */
+function copyTextToClipboard(text, successMsg) {
+  if (navigator.clipboard && navigator.clipboard.writeText) {
+    navigator.clipboard.writeText(text).then(() => {
+      playHaptic('success');
+      toast(successMsg || '📋 คัดลอกข้อความสำหรับส่ง LINE แล้ว!');
+    }).catch(() => {
+      fallbackCopyText(text, successMsg);
+    });
+  } else {
+    fallbackCopyText(text, successMsg);
+  }
+}
+
+function fallbackCopyText(text, successMsg) {
+  try {
+    const ta = document.createElement('textarea');
+    ta.value = text;
+    ta.style.position = 'fixed';
+    ta.style.left = '-9999px';
+    ta.style.top = '-9999px';
+    document.body.appendChild(ta);
+    ta.focus();
+    ta.select();
+    const ok = document.execCommand('copy');
+    document.body.removeChild(ta);
+    if (ok) {
+      playHaptic('success');
+      toast(successMsg || '📋 คัดลอกข้อความสำหรับส่ง LINE แล้ว!');
+    } else {
+      toast('❌ คัดลอกไม่สำเร็จ', true);
+    }
+  } catch(e) {
+    toast('❌ คัดลอกไม่สำเร็จ: ' + e.message, true);
+  }
+}
+
+function copyOutOfStockForLine() {
+  if (outOfStockItems.length === 0) {
+    const text = `🔥 [อัปเดตเมนูหม่าล่าทอดวันนี้] 🔥\n✨ วันนี้ของเข้าครบทุกเมนู พร้อมเสิร์ฟทุกรายการค่ะ!\n🍢 สั่งได้เลยนะคะ ทางร้านกำลังเร่งทำออเดอร์ค่ะ ✨`;
+    copyTextToClipboard(text, '📋 คัดลอก: วันนี้ของมีครบทุกเมนูแล้ว');
+    return;
+  }
+
+  let text = `⛔ [แจ้งเมนูหม่าล่าทอดที่หมดวันนี้] ⛔\n`;
+  outOfStockItems.forEach(id => {
+    const m = MENU.find(x => x.id === id);
+    const priceStr = m ? ` (${m.price}฿)` : '';
+    text += `❌ ${id}${priceStr}\n`;
+  });
+  text += `--------------------------\n`;
+  text += `🍢 เมนูอื่นๆ มีพร้อมเสิร์ฟครบตามปกติค่ะ\n`;
+  text += `✨ พิมพ์สั่งจำนวนไม้ที่ต้องการได้เลยนะคะ! ✨`;
+
+  copyTextToClipboard(text, `📋 คัดลอกรายการของหมด (${outOfStockItems.length} เมนู) ส่ง LINE แล้ว!`);
+}
+
+function copyInStockForLine() {
+  const inStockItems = MENU.filter(m => !isOutOfStock(m.id));
+  if (inStockItems.length === 0) {
+    const text = `🔥 [แจ้งสถานะร้านหม่าล่าทอด] 🔥\n⛔ วันนี้เมนูหมดทุกรายการแล้วนะคะ ขออภัยลูกค้าด้วยค่ะ\nเจอกันใหม่รอบหน้านะคะ ขอบคุณค่ะ 🙏✨`;
+    copyTextToClipboard(text, '📋 คัดลอก: วันนี้ของหมดทุกรายการแล้ว');
+    return;
+  }
+
+  const tiers = [
+    { price: 6, label: '🟢 ไม้ 6 บาท' },
+    { price: 7, label: '🔵 ไม้ 7 บาท' },
+    { price: 10, label: '🟠 ไม้ 10 บาท' },
+    { price: 13, label: '🔴 ไม้ 13 บาท' }
+  ];
+
+  let text = `🔥 [เมนูหม่าล่าทอดพร้อมเสิร์ฟวันนี้] 🔥\n`;
+  tiers.forEach(t => {
+    const items = inStockItems.filter(m => m.price === t.price);
+    if (items.length > 0) {
+      text += `\n${t.label}:\n`;
+      text += items.map(m => `• ${m.id}`).join('\n') + '\n';
+    }
+  });
+
+  text += `--------------------------\n`;
+  text += `🍢 เลือกระดับความเผ็ด: เผ็ดน้อย / กลาง / มาก / ไม่เผ็ด\n`;
+  text += `💬 พิมพ์เมนูและจำนวนส่งมาได้เลยค่ะ แม่ค้ากำลังเร่งทำให้นะคะ! ✨`;
+
+  copyTextToClipboard(text, `📋 คัดลอกเมนูพร้อมเสิร์ฟ (${inStockItems.length} เมนู) ส่ง LINE แล้ว!`);
+}
+
+function copyFullStockSummaryForLine() {
+  const inStockItems = MENU.filter(m => !isOutOfStock(m.id));
+  const soldOutCount = outOfStockItems.length;
+
+  const tiers = [
+    { price: 6, label: '🟢 6 บาท' },
+    { price: 7, label: '🔵 7 บาท' },
+    { price: 10, label: '🟠 10 บาท' },
+    { price: 13, label: '🔴 13 บาท' }
+  ];
+
+  let text = `🔥 [อัปเดตเมนูหม่าล่าทอดวันนี้] 🔥\n`;
+
+  text += `\n🍢 เมนูพร้อมเสิร์ฟ (${inStockItems.length} รายการ):\n`;
+  tiers.forEach(t => {
+    const items = inStockItems.filter(m => m.price === t.price);
+    if (items.length > 0) {
+      text += `${t.label}: ${items.map(m => m.id).join(', ')}\n`;
+    }
+  });
+
+  if (soldOutCount > 0) {
+    text += `\n⛔ เมนูที่หมดแล้ว (${soldOutCount} รายการ):\n`;
+    outOfStockItems.forEach(id => {
+      text += `❌ ${id}\n`;
+    });
+  } else {
+    text += `\n✨ วันนี้ของมีครบทุกเมนู ไม่มีของหมดค่ะ\n`;
+  }
+
+  text += `--------------------------\n`;
+  text += `💬 พิมพ์สั่งออเดอร์มาได้เลยนะคะ ยินดีให้บริการค่ะ! ✨`;
+
+  copyTextToClipboard(text, '📋 คัดลอกสรุปเมนูทั้งมี/หมด สำหรับส่ง LINE แล้ว!');
 }
 
 function init() {
