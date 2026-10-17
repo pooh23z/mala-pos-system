@@ -1772,6 +1772,41 @@
       box-shadow: 0 4px 12px rgba(46, 213, 115, 0.4);
     }
     
+  
+    .btn-top-copy {
+      padding: 5px 12px;
+      border-radius: 99px;
+      font-family: inherit;
+      font-size: 12px;
+      font-weight: 700;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      transition: all 0.2s;
+      white-space: nowrap;
+    }
+    .btn-top-copy.sold {
+      background: rgba(255, 71, 87, 0.15);
+      border: 1px solid rgba(255, 71, 87, 0.4);
+      color: #ff6b81;
+    }
+    .btn-top-copy.sold:hover {
+      background: #ff4757;
+      color: #fff;
+      box-shadow: 0 4px 15px rgba(255, 71, 87, 0.4);
+    }
+    .btn-top-copy.in-stock {
+      background: rgba(46, 213, 115, 0.15);
+      border: 1px solid rgba(46, 213, 115, 0.4);
+      color: #2ed573;
+    }
+    .btn-top-copy.in-stock:hover {
+      background: #2ed573;
+      color: #000;
+      box-shadow: 0 4px 15px rgba(46, 213, 115, 0.4);
+    }
+    
   </style>
 </head>
 <body>
@@ -1809,6 +1844,14 @@
       <button class="btn-stock-top" onclick="openStockModal()" title="เช็คสต็อกและติ๊กของหมด">
         <span>📦 สต็อก</span>
         <span class="stock-badge" id="top-stock-badge" style="display:none;">0</span>
+      </button>
+
+      <!-- Prominent 1-Click Copy Buttons in Top Bar -->
+      <button class="btn-top-copy sold" onclick="copyOutOfStockForLine()" title="คัดลอกรายการของหมดส่ง LINE">
+        <span>⛔ คัดลอกของหมด</span>
+      </button>
+      <button class="btn-top-copy in-stock" onclick="copyInStockForLine()" title="คัดลอกรายการของที่มีส่ง LINE">
+        <span>🟢 คัดลอกของที่มี</span>
       </button>
 
       <!-- Fast Paste from LINE Button -->
@@ -1905,6 +1948,16 @@
         <div class="menu-header-row">
           <div class="menu-title-wrap">
             <h1 class="menu-title">เลือกเมนู</h1>
+            <button class="btn-stock-pill" onclick="openStockModal()" title="เปิดเช็คสต็อกสินค้า">
+              <span>📦 สต็อก</span>
+              <span class="stock-badge" id="stock-out-count" style="display:none;">0</span>
+            </button>
+            <button class="btn-line-header sold" onclick="copyOutOfStockForLine()" title="คัดลอกเฉพาะรายการที่ของหมดส่ง LINE">
+              <span>⛔ คัดลอกของหมด</span>
+            </button>
+            <button class="btn-line-header in-stock" onclick="copyInStockForLine()" title="คัดลอกรายการของที่มีพร้อมเสิร์ฟส่ง LINE">
+              <span>🟢 คัดลอกของที่มี</span>
+            </button>
           </div>
           
           <div class="search-wrap">
