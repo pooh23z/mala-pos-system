@@ -4101,7 +4101,11 @@ function triggerPaymentAlert(data) {
   if (banner) {
     let amtDisplay = (data.amount || '').replace('บาท', '').trim();
     document.getElementById('payment-toast-amt').textContent = '+฿' + amtDisplay;
-    document.getElementById('payment-toast-bank').textContent = data.bank || 'Make by KBank';
+    let bankDesc = data.bank || 'Make by KBank';
+    if (data.sender_name && data.sender_name !== 'ผู้โอนทาง Mobile Banking') {
+      bankDesc = data.sender_name + ' • ' + bankDesc;
+    }
+    document.getElementById('payment-toast-bank').textContent = bankDesc;
     document.getElementById('payment-toast-time').textContent = data.time || '';
     banner.style.display = 'block';
     clearTimeout(window._payToastTimer);
