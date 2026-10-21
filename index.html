@@ -4117,11 +4117,15 @@ function triggerPaymentAlert(data) {
           window.speechSynthesis.resume();
         }
         window.speechSynthesis.cancel();
-        const cleanAmt = (data.amount || '').replace('บาท', '').trim();
-        const speechText = `ได้รับเงินโอน ${cleanAmt} บาท เรียบร้อยแล้วค่ะ`;
+        let cleanAmt = (data.amount || '').replace('บาท', '').trim();
+        // Remove .00 if present so it speaks clean whole numbers (e.g. 100 instead of 100.00)
+        if (cleanAmt.endsWith('.00')) {
+          cleanAmt = cleanAmt.slice(0, -3);
+        }
+        const speechText = `รับ ${cleanAmt} บาท`;
         const ut = new SpeechSynthesisUtterance(speechText);
         ut.lang = 'th-TH';
-        ut.rate = 1.0;
+        ut.rate = 1.05;
         ut.pitch = 1.0;
         ut.volume = 1.0;
 
@@ -4166,20 +4170,20 @@ function playPaymentChime() {
 
 function testSlipVoice() {
   const wsUrl = getSlipBotWsUrl();
-  const httpTestUrl = wsUrl.replace('wss://', 'https://').replace('ws://', 'http://').replace('/ws/pos', '/api/test-payment?amount=150.00%20บาท');
+  const httpTestUrl = wsUrl.replace('wss://', 'https://').replace('ws://', 'http://').replace('/ws/pos', '/api/test-payment?amount=100.00%20บาท');
 
   fetch(httpTestUrl)
     .then(r => r.json())
     .then(d => {
-      toast('🔊 ทดสอบส่งเสียงแจ้งเตือนเงินเข้า 150 บาท');
+      toast('🔊 ทดสอบเสียงพูด: รับ 100 บาท');
     })
     .catch(err => {
       triggerPaymentAlert({
-        amount: '150.00 บาท',
+        amount: '100.00 บาท',
         bank: 'กสิกรไทย (Make by KBank)',
         time: new Date().toLocaleTimeString('th-TH', { hour: '2-digit', minute: '2-digit' }) + ' น.'
       });
-      toast('🔊 ทดสอบเสียงพูดผ่านลำโพงเครื่อง');
+      toast('🔊 ทดสอบเสียงพูด: รับ 100 บาท');
     });
 }
 
