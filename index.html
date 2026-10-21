@@ -2270,17 +2270,22 @@
   </div>
 </div>
 
-<!-- FLOATING PAYMENT ALERT POPUP -->
-<div id="payment-toast" style="display:none; position:fixed; top:25px; left:50%; transform:translateX(-50%); z-index:99999; background:linear-gradient(135deg, rgba(20, 24, 33, 0.96), rgba(30, 41, 59, 0.98)); border:2px solid #2ed573; box-shadow:0 12px 40px rgba(46,213,115,0.45); border-radius:18px; padding:18px 30px; min-width:340px; color:#fff; text-align:center; backdrop-filter:blur(10px); cursor:pointer;" onclick="this.style.display='none'">
-  <div style="font-size:13px; color:#a7f3d0; font-weight:700; display:flex; align-items:center; justify-content:center; gap:8px;">
-    <span style="font-size:22px;">🔔</span> ได้รับเงินโอน (ผ่าน LINE)
-  </div>
-  <div id="payment-toast-amt" style="font-size:36px; font-weight:900; color:#2ed573; margin:6px 0; text-shadow:0 0 20px rgba(46,213,115,0.6);">
-    +฿0.00
-  </div>
-  <div style="font-size:13px; color:#cbd5e1; display:flex; justify-content:space-between; margin-top:8px; border-top:1px solid rgba(255,255,255,0.12); padding-top:8px;">
-    <span id="payment-toast-bank">🏦 ธนาคาร: กสิกรไทย</span>
-    <span id="payment-toast-time">⏰ 13:25 น.</span>
+<!-- OFFICIAL PAYMENT VERIFIED NOTIFICATION (Apple Pay Style) -->
+<div id="payment-toast" style="display:none; position:fixed; top:20px; left:50%; transform:translateX(-50%); z-index:99999; background:rgba(15, 23, 42, 0.94); border:1px solid rgba(255, 255, 255, 0.14); box-shadow:0 20px 50px rgba(0, 0, 0, 0.6), 0 0 0 1px rgba(16, 185, 129, 0.25); border-radius:20px; padding:12px 22px; min-width:320px; max-width:440px; color:#fff; backdrop-filter:blur(24px); -webkit-backdrop-filter:blur(24px); cursor:pointer;" onclick="this.style.display='none'">
+  <div style="display:flex; align-items:center; gap:14px;">
+    <div style="width:40px; height:40px; border-radius:50%; background:rgba(16, 185, 129, 0.15); border:1px solid rgba(16, 185, 129, 0.35); display:flex; align-items:center; justify-content:center; flex-shrink:0;">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#10b981" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
+    </div>
+    <div style="flex:1; text-align:left;">
+      <div style="display:flex; justify-content:space-between; align-items:center;">
+        <span style="font-size:11px; font-weight:700; letter-spacing:0.06em; text-transform:uppercase; color:#94a3b8;">LINE OA Payment</span>
+        <span id="payment-toast-time" style="font-size:11px; color:#64748b; font-family:monospace;">16:30 น.</span>
+      </div>
+      <div style="display:flex; justify-content:space-between; align-items:baseline; margin-top:2px;">
+        <span id="payment-toast-bank" style="font-size:13px; font-weight:500; color:#e2e8f0;">กสิกรไทย (Make)</span>
+        <span id="payment-toast-amt" style="font-size:22px; font-weight:800; color:#10b981; font-family:'Inter', sans-serif; letter-spacing:-0.02em;">+฿0.00</span>
+      </div>
+    </div>
   </div>
 </div>
 
@@ -4091,15 +4096,16 @@ function triggerPaymentAlert(data) {
   // 1. Play pleasant soft payment chime (bell)
   playPaymentChime();
 
-  // 2. Show floating visual banner
+  // 2. Show floating visual banner (Apple Pay Style)
   const banner = document.getElementById('payment-toast');
   if (banner) {
-    document.getElementById('payment-toast-amt').textContent = '+' + data.amount;
-    document.getElementById('payment-toast-bank').textContent = '🏦 ' + (data.bank || 'ธนาคาร');
-    document.getElementById('payment-toast-time').textContent = '⏰ ' + (data.time || '');
+    let amtDisplay = (data.amount || '').replace('บาท', '').trim();
+    document.getElementById('payment-toast-amt').textContent = '+฿' + amtDisplay;
+    document.getElementById('payment-toast-bank').textContent = data.bank || 'Make by KBank';
+    document.getElementById('payment-toast-time').textContent = data.time || '';
     banner.style.display = 'block';
     clearTimeout(window._payToastTimer);
-    window._payToastTimer = setTimeout(() => { banner.style.display = 'none'; }, 9000);
+    window._payToastTimer = setTimeout(() => { banner.style.display = 'none'; }, 8000);
   }
 
   // 3. Web Speech API (Voice Announcement in Thai) - wait 400ms for chime to finish
