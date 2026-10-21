@@ -1859,6 +1859,12 @@
         <span>📋</span> วางแชท LINE
       </button>
       
+      <!-- Slip Bot & Voice Box Status -->
+      <div class="conn-status" id="slip-bot-pill" onclick="testSlipVoice()" data-tooltip="สถานะบอทตรวจสลิป (คลิกเพื่อทดสอบเสียง)" style="margin-right: 2px;">
+        <div class="pulse-dot" id="slip-bot-dot" style="background:#ffa502;"></div>
+        <span id="slip-bot-text">บอทสลิป: เชื่อมต่อ...</span>
+      </div>
+
       <div class="conn-status" onclick="openSettingsModal()" data-tooltip="คลิกเพื่อดูการตั้งค่า Sheet">
         <div class="pulse-dot online" id="conn-dot"></div>
         <span id="conn-text">เชื่อมต่อระบบแล้ว ✓</span>
@@ -2250,10 +2256,31 @@
         <option value="off">ปิดเสียง 🔇</option>
       </select>
     </div>
+    <div class="input-group">
+      <label>URL บอทตรวจสลิป (WebSocket สำหรับเสียงอ่านเงินเข้า)</label>
+      <input type="text" id="slip-bot-url" placeholder="wss://... หรือ ws://127.0.0.1:8000/ws/pos">
+      <div style="font-size:11px; color:var(--text-muted); margin-top:4px;">
+        💡 ใส่ Cloudflare URL หรือ IP เครื่องที่เปิดบอท เพื่อให้เครื่องอื่นและน้องสาวได้ยินเสียงพร้อมกัน
+      </div>
+    </div>
     <div class="modal-actions">
       <button class="btn-modal btn-cancel" onclick="closeModal('modal-settings')">ยกเลิก</button>
       <button class="btn-modal btn-confirm" onclick="saveConfig()">บันทึกการตั้งค่า</button>
     </div>
+  </div>
+</div>
+
+<!-- FLOATING PAYMENT ALERT POPUP -->
+<div id="payment-toast" style="display:none; position:fixed; top:25px; left:50%; transform:translateX(-50%); z-index:99999; background:linear-gradient(135deg, rgba(20, 24, 33, 0.96), rgba(30, 41, 59, 0.98)); border:2px solid #2ed573; box-shadow:0 12px 40px rgba(46,213,115,0.45); border-radius:18px; padding:18px 30px; min-width:340px; color:#fff; text-align:center; backdrop-filter:blur(10px); cursor:pointer;" onclick="this.style.display='none'">
+  <div style="font-size:13px; color:#a7f3d0; font-weight:700; display:flex; align-items:center; justify-content:center; gap:8px;">
+    <span style="font-size:22px;">🔔</span> ได้รับเงินโอน (ผ่าน LINE)
+  </div>
+  <div id="payment-toast-amt" style="font-size:36px; font-weight:900; color:#2ed573; margin:6px 0; text-shadow:0 0 20px rgba(46,213,115,0.6);">
+    +฿0.00
+  </div>
+  <div style="font-size:13px; color:#cbd5e1; display:flex; justify-content:space-between; margin-top:8px; border-top:1px solid rgba(255,255,255,0.12); padding-top:8px;">
+    <span id="payment-toast-bank">🏦 ธนาคาร: กสิกรไทย</span>
+    <span id="payment-toast-time">⏰ 13:25 น.</span>
   </div>
 </div>
 
@@ -2647,6 +2674,8 @@ function loadConfig() {
   document.getElementById('script-url').value = cfg.url;
   document.getElementById('script-url-cost').value = cfg.urlCost;
   document.getElementById('sound-setting').value = cfg.sound || 'on';
+  const botInput = document.getElementById('slip-bot-url');
+  if (botInput) botInput.value = cfg.slipBotUrl || '';
   
   updateConnStatus(true);
 }
@@ -2655,6 +2684,8 @@ function saveConfig() {
   cfg.url = document.getElementById('script-url').value.trim() || DEFAULT_POS_URL;
   cfg.urlCost = document.getElementById('script-url-cost').value.trim() || DEFAULT_COST_URL;
   cfg.sound = document.getElementById('sound-setting').value;
+  const botInput = document.getElementById('slip-bot-url');
+  if (botInput) cfg.slipBotUrl = botInput.value.trim();
   
   try {
     localStorage.setItem('mala_pos_cfg', JSON.stringify(cfg));
@@ -2662,6 +2693,7 @@ function saveConfig() {
   } catch(e) {}
 
   updateConnStatus(true);
+  connectSlipBot();
   closeModal('modal-settings');
   toast('✅ บันทึกการตั้งค่าแล้ว');
   
@@ -3931,7 +3963,137 @@ function playHaptic(type = 'click') {
   } catch(e) {}
 }
 
+/* ─── REAL-TIME SLIP BOT & VOICE BOX INTEGRATION (MULTI-DEVICE) ─── */
+let slipBotSocket = null;
+let slipBotReconnectTimer = null;
+const CLOUDFLARE_WS_URL = "wss://andrea-realm-tyler-response.trycloudflare.com/ws/pos";
+
+function getSlipBotWsUrl() {
+  if (cfg.slipBotUrl && cfg.slipBotUrl.trim()) {
+    return cfg.slipBotUrl.trim();
+  }
+  if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
+    return 'ws://127.0.0.1:8000/ws/pos';
+  }
+  return CLOUDFLARE_WS_URL;
+}
+
+function connectSlipBot() {
+  const dot = document.getElementById('slip-bot-dot');
+  const txt = document.getElementById('slip-bot-text');
+
+  if (slipBotSocket) {
+    try { slipBotSocket.close(); } catch(e) {}
+  }
+
+  try {
+    const wsUrl = getSlipBotWsUrl();
+    slipBotSocket = new WebSocket(wsUrl);
+
+    slipBotSocket.onopen = () => {
+      if (dot) {
+        dot.className = 'pulse-dot online';
+        dot.style.background = 'var(--success)';
+      }
+      if (txt) txt.textContent = 'บอทสลิป: เชื่อมต่อแล้ว 🔊';
+      console.log('✅ Connected to Mala Slip Verifier Bot WebSocket at', wsUrl);
+    };
+
+    slipBotSocket.onmessage = (event) => {
+      try {
+        const data = JSON.parse(event.data);
+        if (data.type === 'PAYMENT_RECEIVED') {
+          triggerPaymentAlert(data);
+        }
+      } catch(e) {}
+    };
+
+    slipBotSocket.onclose = () => {
+      if (dot) {
+        dot.className = 'pulse-dot';
+        dot.style.background = '#ffa502';
+      }
+      if (txt) txt.textContent = 'บอทสลิป: รอการเชื่อมต่อ...';
+      clearTimeout(slipBotReconnectTimer);
+      slipBotReconnectTimer = setTimeout(connectSlipBot, 4000);
+    };
+
+    slipBotSocket.onerror = () => {
+      if (slipBotSocket) slipBotSocket.close();
+    };
+  } catch(e) {
+    clearTimeout(slipBotReconnectTimer);
+    slipBotReconnectTimer = setTimeout(connectSlipBot, 4000);
+  }
+}
+
+function triggerPaymentAlert(data) {
+  // 1. Play pleasant payment chime
+  playPaymentChime();
+
+  // 2. Show floating visual banner
+  const banner = document.getElementById('payment-toast');
+  if (banner) {
+    document.getElementById('payment-toast-amt').textContent = '+' + data.amount;
+    document.getElementById('payment-toast-bank').textContent = '🏦 ' + (data.bank || 'ธนาคาร');
+    document.getElementById('payment-toast-time').textContent = '⏰ ' + (data.time || '');
+    banner.style.display = 'block';
+    clearTimeout(window._payToastTimer);
+    window._payToastTimer = setTimeout(() => { banner.style.display = 'none'; }, 9000);
+  }
+
+  // 3. Web Speech API (Voice Announcement in Thai)
+  if ('speechSynthesis' in window && cfg.sound !== 'off') {
+    window.speechSynthesis.cancel();
+    const cleanAmt = (data.amount || '').replace('บาท', '').trim();
+    const speechText = `ได้รับเงินโอน ${cleanAmt} บาท เรียบร้อยแล้วค่ะ`;
+    const ut = new SpeechSynthesisUtterance(speechText);
+    ut.lang = 'th-TH';
+    ut.rate = 1.0;
+    ut.pitch = 1.05;
+    window.speechSynthesis.speak(ut);
+  }
+}
+
+function playPaymentChime() {
+  try {
+    const ctx = new (window.AudioContext || window.webkitAudioContext)();
+    const now = ctx.currentTime;
+    [523.25, 659.25, 783.99, 1046.50].forEach((freq, i) => {
+      const osc = ctx.createOscillator();
+      const gain = ctx.createGain();
+      osc.frequency.setValueAtTime(freq, now + i * 0.08);
+      gain.gain.setValueAtTime(0.12, now + i * 0.08);
+      gain.gain.exponentialRampToValueAtTime(0.001, now + i * 0.08 + 0.35);
+      osc.connect(gain);
+      gain.connect(ctx.destination);
+      osc.start(now + i * 0.08);
+      osc.stop(now + i * 0.08 + 0.35);
+    });
+  } catch(e) {}
+}
+
+function testSlipVoice() {
+  const wsUrl = getSlipBotWsUrl();
+  const httpTestUrl = wsUrl.replace('wss://', 'https://').replace('ws://', 'http://').replace('/ws/pos', '/api/test-payment?amount=150.00%20บาท');
+
+  fetch(httpTestUrl)
+    .then(r => r.json())
+    .then(d => {
+      toast('🔊 ทดสอบส่งเสียงแจ้งเตือนเงินเข้า 150 บาท');
+    })
+    .catch(err => {
+      triggerPaymentAlert({
+        amount: '150.00 บาท',
+        bank: 'กสิกรไทย (Make by KBank)',
+        time: new Date().toLocaleTimeString('th-TH', { hour: '2-digit', minute: '2-digit' }) + ' น.'
+      });
+      toast('🔊 ทดสอบเสียงพูดผ่านลำโพงเครื่อง');
+    });
+}
+
 init();
+connectSlipBot();
 </script>
 </body>
 </html>
