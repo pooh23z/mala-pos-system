@@ -1324,6 +1324,33 @@
     }
     .btn-confirm:hover { filter: brightness(1.1); }
 
+    /* ─── BEST SELLERS & DAILY REPORT ─── */
+    .dash-bestseller-card:hover {
+      background: rgba(255, 165, 2, 0.08) !important;
+      border-color: var(--accent) !important;
+    }
+    .btn-date-pill {
+      background: rgba(255, 255, 255, 0.06);
+      border: 1px solid var(--panel-border);
+      color: var(--text-muted);
+      padding: 3px 12px;
+      border-radius: 99px;
+      font-size: 11px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .btn-date-pill:hover {
+      background: rgba(255, 255, 255, 0.12);
+      color: #fff;
+    }
+    .btn-date-pill.active {
+      background: var(--accent);
+      color: #000;
+      font-weight: 700;
+      border-color: var(--accent);
+    }
+
     /* ─── TOAST & TOOLTIPS ─── */
     .toast {
       position: fixed;
@@ -1910,6 +1937,19 @@
           <div class="chart-container" id="dash-chart">
             <!-- Bars injected via JS with click-to-filter -->
           </div>
+
+          <!-- Daily Best Seller Action & Mini Preview -->
+          <div class="dash-bestseller-card" onclick="openBestSellersModal()" style="margin-top:8px; background:rgba(255,255,255,0.03); border:1px solid rgba(255,165,2,0.25); border-radius:10px; padding:8px 10px; cursor:pointer; transition:all 0.2s;">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:4px;">
+              <span style="font-size:11px; font-weight:700; color:#ffd280; display:flex; align-items:center; gap:4px;">
+                <span>👑 เมนูขายดีประจำวัน</span>
+              </span>
+              <span style="font-size:10px; color:var(--text-muted); font-weight:600;">ดูรายงาน ➔</span>
+            </div>
+            <div id="dash-bestseller-preview" style="font-size:11px; color:#fff; display:flex; flex-direction:column; gap:3px;">
+              <span style="color:var(--text-muted); font-size:11px;">กำลังคำนวณอันดับ...</span>
+            </div>
+          </div>
         </div>
         
         <!-- Persistent Order Review Board Panel with Dynamic Date Selector -->
@@ -2230,6 +2270,64 @@
     <div class="modal-actions">
       <button class="btn-modal btn-cancel" onclick="closeModal('modal-date')">ยกเลิก</button>
       <button class="btn-modal btn-confirm" onclick="applyCustomDatePick()">ตกลง</button>
+    </div>
+  </div>
+</div>
+
+<!-- DAILY BEST SELLERS & REVENUE REPORT MODAL -->
+<div class="modal-overlay" id="modal-bestseller">
+  <div class="modal-content" style="max-width: 500px; width: 94%;">
+    <div class="modal-title">
+      <span style="display:flex; align-items:center; gap:8px;">
+        <span>👑 สรุปยอดขาย & จัดอันดับเมนูขายดี</span>
+      </span>
+      <button class="btn-icon" onclick="closeModal('modal-bestseller')" style="width:28px; height:28px;">✕</button>
+    </div>
+
+    <!-- Date selector inside modal -->
+    <div style="display:flex; justify-content:space-between; align-items:center; background:rgba(255,255,255,0.04); padding:8px 12px; border-radius:10px; margin-bottom:12px; border:1px solid var(--panel-border);">
+      <span id="bs-modal-date-label" style="font-size:12px; font-weight:700; color:#ffd280;">📅 ประจำวันนี้</span>
+      <div style="display:flex; gap:6px;">
+        <button class="btn-date-pill active" id="btn-bs-pick-today" onclick="setBestSellerDate('today')">วันนี้</button>
+        <button class="btn-date-pill" id="btn-bs-pick-all" onclick="setBestSellerDate('all')">ประวัติทั้งหมด</button>
+      </div>
+    </div>
+
+    <!-- 3 Core Stats Cards -->
+    <div style="display:grid; grid-template-columns: repeat(3, 1fr); gap:8px; margin-bottom:14px;">
+      <div style="background:rgba(255,165,2,0.08); border:1px solid rgba(255,165,2,0.3); border-radius:10px; padding:10px 8px; text-align:center;">
+        <div style="font-size:10px; color:#ffd280; font-weight:700; margin-bottom:2px;">💰 ยอดเงินรวม</div>
+        <div id="bs-modal-total" style="font-size:16px; font-weight:800; color:#fff;">฿0</div>
+      </div>
+      <div style="background:rgba(46,213,115,0.08); border:1px solid rgba(46,213,115,0.3); border-radius:10px; padding:10px 8px; text-align:center;">
+        <div style="font-size:10px; color:#2ed573; font-weight:700; margin-bottom:2px;">🍢 จำนวนไม้รวม</div>
+        <div id="bs-modal-sticks" style="font-size:16px; font-weight:800; color:#fff;">0 ไม้</div>
+      </div>
+      <div style="background:rgba(112,111,211,0.08); border:1px solid rgba(112,111,211,0.3); border-radius:10px; padding:10px 8px; text-align:center;">
+        <div style="font-size:10px; color:#a29bfe; font-weight:700; margin-bottom:2px;">📋 ออเดอร์</div>
+        <div id="bs-modal-orders" style="font-size:16px; font-weight:800; color:#fff;">0</div>
+      </div>
+    </div>
+
+    <!-- Best Seller Ranking Header -->
+    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px; font-size:12px; font-weight:700; color:#fff;">
+      <span>🏆 จัดอันดับเมนูขายดีที่สุด</span>
+      <span id="bs-modal-item-count" style="font-size:11px; color:var(--text-muted); font-weight:400;">0 รายการ</span>
+    </div>
+
+    <!-- Ranking List with Medals and Progress Bars -->
+    <div id="bs-modal-items-list" style="max-height: 260px; overflow-y:auto; padding-right:4px; display:flex; flex-direction:column; gap:6px;">
+      <!-- Injected via renderBestSellersModal() -->
+    </div>
+
+    <!-- Modal Actions -->
+    <div class="modal-actions" style="margin-top:16px; gap:8px;">
+      <button class="btn-modal" onclick="copyBestSellersForLine()" style="flex:1.6; background:linear-gradient(135deg, #059669, #10b981); color:#fff; font-weight:700; border:none; box-shadow:0 4px 12px rgba(16,185,129,0.3);">
+        <span>📋 คัดลอกสรุปส่ง LINE</span>
+      </button>
+      <button class="btn-modal btn-cancel" onclick="closeModal('modal-bestseller')" style="flex:1;">
+        <span>✕ ปิด</span>
+      </button>
     </div>
   </div>
 </div>
@@ -3753,6 +3851,270 @@ function updateDashboardSummary() {
   }
 
   renderChart(summaryData.slice(-7));
+  renderBestSellersPreview();
+}
+
+/* ─── BEST SELLERS & DAILY REVENUE ANALYTICS ─── */
+function getBestSellersData(orders) {
+  const itemMap = {};
+  let totalSticks = 0;
+  let totalAmount = 0;
+
+  (orders || []).forEach(order => {
+    totalAmount += Number(order.amount || 0);
+
+    // 1. Try itemsJson
+    if (order.itemsJson) {
+      try {
+        const parsed = typeof order.itemsJson === 'string' ? JSON.parse(order.itemsJson) : order.itemsJson;
+        if (Array.isArray(parsed) && parsed.length > 0) {
+          parsed.forEach(it => {
+            const name = (it.name || it.id || 'ไม่ระบุชื่อ').trim();
+            const qty = Number(it.qty || 1);
+            const m = MENU.find(x => x.id === name);
+            const price = Number(it.price || (m ? m.price : 0));
+            const subtotal = Number(it.subtotal || price * qty);
+
+            if (!itemMap[name]) itemMap[name] = { name, qty: 0, subtotal: 0, price };
+            itemMap[name].qty += qty;
+            itemMap[name].subtotal += subtotal;
+            totalSticks += qty;
+          });
+          return;
+        }
+      } catch(e) {}
+    }
+
+    // 2. Try itemsDetail (e.g. "หมูสามชั้น × 5, ไส้กรอกชีส × 3")
+    if (order.itemsDetail) {
+      const items = order.itemsDetail.split(',');
+      items.forEach(it => {
+        const clean = it.trim();
+        const match = clean.match(/(.+?)\s*[×x*]\s*(\d+)/);
+        if (match) {
+          const name = match[1].trim();
+          const qty = parseInt(match[2]) || 1;
+          const m = MENU.find(x => x.id === name);
+          const price = m ? m.price : 0;
+          const subtotal = price * qty;
+
+          if (!itemMap[name]) itemMap[name] = { name, qty: 0, subtotal: 0, price };
+          itemMap[name].qty += qty;
+          itemMap[name].subtotal += subtotal;
+          totalSticks += qty;
+        } else if (clean) {
+          const name = clean;
+          const qty = 1;
+          const m = MENU.find(x => x.id === name);
+          const price = m ? m.price : 0;
+          if (!itemMap[name]) itemMap[name] = { name, qty: 0, subtotal: 0, price };
+          itemMap[name].qty += qty;
+          itemMap[name].subtotal += price;
+          totalSticks += qty;
+        }
+      });
+      return;
+    }
+
+    // 3. Fallback sticks count
+    const s = computeSticksCount(order);
+    if (s > 0) {
+      totalSticks += s;
+      if (!itemMap['รายการทั่วไป']) itemMap['รายการทั่วไป'] = { name: 'รายการทั่วไป', qty: 0, subtotal: 0, price: 0 };
+      itemMap['รายการทั่วไป'].qty += s;
+      itemMap['รายการทั่วไป'].subtotal += Number(order.amount || 0);
+    }
+  });
+
+  const sorted = Object.values(itemMap).sort((a, b) => b.qty - a.qty);
+  return {
+    items: sorted,
+    totalSticks,
+    totalAmount,
+    totalOrders: (orders || []).length
+  };
+}
+
+function renderBestSellersPreview() {
+  const container = document.getElementById('dash-bestseller-preview');
+  if (!container) return;
+
+  const todayStr = getDateStr();
+  let targetOrders = [];
+  if (selectedDateStr === 'today' || selectedDateStr === todayStr) {
+    targetOrders = allOrders.filter(r => r.date === todayStr);
+  } else if (selectedDateStr === 'all') {
+    targetOrders = allOrders;
+  } else {
+    targetOrders = allOrders.filter(r => r.date === selectedDateStr);
+  }
+
+  const data = getBestSellersData(targetOrders);
+  if (!data.items || data.items.length === 0) {
+    container.innerHTML = '<span style="color:var(--text-muted); font-size:11px;">ยังไม่มีข้อมูลเมนูที่ขายในวันที่เลือก</span>';
+    return;
+  }
+
+  const medals = ['🥇', '🥈', '🥉'];
+  const top3 = data.items.slice(0, 3);
+  let html = '';
+  top3.forEach((it, i) => {
+    const pct = data.totalSticks > 0 ? Math.round((it.qty / data.totalSticks) * 100) : 0;
+    html += `
+      <div style="display:flex; justify-content:space-between; align-items:center; font-size:11px; padding:1px 0;">
+        <span style="color:#f1f5f9; display:flex; align-items:center; gap:4px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; max-width:130px;">
+          <span>${medals[i] || (i+1)+'.'}</span>
+          <span style="font-weight:600;">${it.name}</span>
+        </span>
+        <span style="font-weight:700; color:#ffd280; white-space:nowrap;">${it.qty} ไม้ <small style="color:var(--text-muted); font-size:9px;">(${pct}%)</small></span>
+      </div>
+    `;
+  });
+  container.innerHTML = html;
+}
+
+let bsSelectedDate = 'today';
+
+function setBestSellerDate(dKey) {
+  bsSelectedDate = dKey;
+  const btnToday = document.getElementById('btn-bs-pick-today');
+  const btnAll = document.getElementById('btn-bs-pick-all');
+  if (btnToday && btnAll) {
+    btnToday.classList.toggle('active', dKey === 'today');
+    btnAll.classList.toggle('active', dKey === 'all');
+  }
+  renderBestSellersModal();
+}
+
+function openBestSellersModal() {
+  bsSelectedDate = (selectedDateStr === 'all' ? 'all' : (selectedDateStr || 'today'));
+  openModal('modal-bestseller');
+  setBestSellerDate(bsSelectedDate);
+}
+
+function renderBestSellersModal() {
+  const todayStr = getDateStr();
+  let targetOrders = [];
+  let dateTitle = '';
+
+  if (bsSelectedDate === 'today' || bsSelectedDate === todayStr) {
+    targetOrders = allOrders.filter(r => r.date === todayStr);
+    dateTitle = `📅 ประจำวันนี้ (${formatDateDisplay(todayStr)})`;
+  } else if (bsSelectedDate === 'all') {
+    targetOrders = allOrders;
+    dateTitle = `📅 ยอดรวมประวัติทั้งหมดทุกวัน`;
+  } else {
+    targetOrders = allOrders.filter(r => r.date === bsSelectedDate);
+    dateTitle = `📅 ยอดขายวันที่ ${formatDateDisplay(bsSelectedDate)}`;
+  }
+
+  const dateLabel = document.getElementById('bs-modal-date-label');
+  if (dateLabel) dateLabel.textContent = dateTitle;
+
+  const data = getBestSellersData(targetOrders);
+
+  // Update 3 stat cards
+  const elTotal = document.getElementById('bs-modal-total');
+  const elSticks = document.getElementById('bs-modal-sticks');
+  const elOrders = document.getElementById('bs-modal-orders');
+  const elCount = document.getElementById('bs-modal-item-count');
+
+  if (elTotal) elTotal.textContent = '฿' + data.totalAmount.toLocaleString();
+  if (elSticks) elSticks.textContent = data.totalSticks.toLocaleString() + ' ไม้';
+  if (elOrders) elOrders.textContent = data.totalOrders.toLocaleString();
+  if (elCount) elCount.textContent = `${data.items.length} รายการเมนู`;
+
+  const listEl = document.getElementById('bs-modal-items-list');
+  if (!listEl) return;
+
+  if (data.items.length === 0) {
+    listEl.innerHTML = `
+      <div style="text-align:center; padding:30px 10px; color:var(--text-muted); font-size:13px;">
+        <div style="font-size:24px; margin-bottom:6px;">🍢</div>
+        ยังไม่มีรายการออเดอร์ในวันที่เลือก
+      </div>
+    `;
+    return;
+  }
+
+  const medals = ['🥇', '🥈', '🥉'];
+  const barGradients = [
+    'linear-gradient(90deg, #ff9f43, #ff5252)',
+    'linear-gradient(90deg, #10b981, #34d399)',
+    'linear-gradient(90deg, #6366f1, #818cf8)',
+    'linear-gradient(90deg, #0284c7, #38bdf8)'
+  ];
+
+  let html = '';
+  data.items.forEach((it, idx) => {
+    const medal = medals[idx] || `<span style="font-size:11px; color:var(--text-muted); font-family:monospace;">${idx+1}.</span>`;
+    const pct = data.totalSticks > 0 ? ((it.qty / data.totalSticks) * 100).toFixed(1) : 0;
+    const barColor = barGradients[Math.min(idx, barGradients.length - 1)];
+
+    html += `
+      <div style="background:rgba(255,255,255,0.03); border:1px solid rgba(255,255,255,0.06); border-radius:8px; padding:8px 12px;">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:5px;">
+          <div style="display:flex; align-items:center; gap:8px;">
+            <span style="font-size:14px; min-width:20px; text-align:center;">${medal}</span>
+            <span style="font-size:13px; font-weight:700; color:#fff;">${it.name}</span>
+          </div>
+          <div style="text-align:right;">
+            <span style="font-size:13px; font-weight:800; color:#ffd280;">${it.qty} ไม้</span>
+            <span style="font-size:11px; color:var(--text-muted); margin-left:6px;">(฿${it.subtotal.toLocaleString()})</span>
+            <span style="font-size:10px; color:#2ed573; font-weight:700; margin-left:4px;">${pct}%</span>
+          </div>
+        </div>
+        <div style="height:5px; width:100%; background:rgba(255,255,255,0.07); border-radius:99px; overflow:hidden;">
+          <div style="height:100%; width:${pct}%; background:${barColor}; border-radius:99px; transition:width 0.4s ease;"></div>
+        </div>
+      </div>
+    `;
+  });
+
+  listEl.innerHTML = html;
+}
+
+function copyBestSellersForLine() {
+  const todayStr = getDateStr();
+  let targetOrders = [];
+  let dateText = '';
+
+  if (bsSelectedDate === 'today' || bsSelectedDate === todayStr) {
+    targetOrders = allOrders.filter(r => r.date === todayStr);
+    dateText = formatDateDisplay(todayStr);
+  } else if (bsSelectedDate === 'all') {
+    targetOrders = allOrders;
+    dateText = 'ยอดรวมทุกวันทั้งหมด';
+  } else {
+    targetOrders = allOrders.filter(r => r.date === bsSelectedDate);
+    dateText = formatDateDisplay(bsSelectedDate);
+  }
+
+  const data = getBestSellersData(targetOrders);
+  if (data.items.length === 0) {
+    toast('⚠️ ไม่มีข้อมูลออเดอร์ให้คัดลอก');
+    return;
+  }
+
+  let text = `📊 สรุปยอดขาย & เมนูขายดี — ร้าน เสม & Friends หมาล่า\n`;
+  text += `📅 วันที่: ${dateText}\n`;
+  text += `━━━━━━━━━━━━━━━━━━━━\n`;
+  text += `💰 ยอดขายรวม: ฿${data.totalAmount.toLocaleString()} บาท\n`;
+  text += `🍢 จำนวนไม้ทั้งหมด: ${data.totalSticks.toLocaleString()} ไม้\n`;
+  text += `📋 จำนวนออเดอร์: ${data.totalOrders.toLocaleString()} ออเดอร์\n`;
+  text += `━━━━━━━━━━━━━━━━━━━━\n`;
+  text += `👑 5 อันดับเมนูขายดีที่สุด:\n`;
+
+  const medals = ['🥇', '🥈', '🥉', '4.', '5.'];
+  const top5 = data.items.slice(0, 5);
+  top5.forEach((it, i) => {
+    const pct = data.totalSticks > 0 ? ((it.qty / data.totalSticks) * 100).toFixed(1) : 0;
+    text += `${medals[i]} ${it.name}: ${it.qty} ไม้ (${pct}%) • ฿${it.subtotal.toLocaleString()}\n`;
+  });
+  text += `━━━━━━━━━━━━━━━━━━━━\n`;
+  text += `✨ รายงานจากระบบ เสม & Friends POS`;
+
+  copyTextToClipboard(text, '📋 คัดลอกสรุปยอด & เมนูขายดีส่ง LINE เรียบร้อย!');
 }
 
 async function fetchSummary() {
