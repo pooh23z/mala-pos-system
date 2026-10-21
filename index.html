@@ -3968,6 +3968,60 @@ let slipBotSocket = null;
 let slipBotReconnectTimer = null;
 const CLOUDFLARE_WS_URL = "wss://andrea-realm-tyler-response.trycloudflare.com/ws/pos";
 
+// iOS / iPadOS Safari AudioContext & Speech Unlocker
+let globalAudioCtx = null;
+let isAudioUnlocked = false;
+
+function getAudioContext() {
+  if (!globalAudioCtx) {
+    const AudioContextClass = window.AudioContext || window.webkitAudioContext;
+    if (AudioContextClass) {
+      globalAudioCtx = new AudioContextClass();
+    }
+  }
+  if (globalAudioCtx && globalAudioCtx.state === 'suspended') {
+    globalAudioCtx.resume().catch(() => {});
+  }
+  return globalAudioCtx;
+}
+
+function unlockAudioIOS() {
+  const ctx = getAudioContext();
+  if (ctx && ctx.state === 'suspended') {
+    ctx.resume().catch(() => {});
+  }
+
+  // Play a 1ms silent buffer to authorize audio on iPadOS Safari
+  if (ctx) {
+    try {
+      const buffer = ctx.createBuffer(1, 1, 22050);
+      const src = ctx.createBufferSource();
+      src.buffer = buffer;
+      src.connect(ctx.destination);
+      src.start(0);
+    } catch(e) {}
+  }
+
+  // Warm-up SpeechSynthesis on iPad
+  if ('speechSynthesis' in window) {
+    try {
+      if (window.speechSynthesis.paused) {
+        window.speechSynthesis.resume();
+      }
+      const emptyUt = new SpeechSynthesisUtterance('');
+      emptyUt.volume = 0;
+      window.speechSynthesis.speak(emptyUt);
+    } catch(e) {}
+  }
+
+  isAudioUnlocked = true;
+}
+
+// Automatically unlock audio on first touch/tap on iPad screen
+['touchstart', 'touchend', 'click', 'pointerdown'].forEach(evt => {
+  document.addEventListener(evt, unlockAudioIOS, { passive: true });
+});
+
 function getSlipBotWsUrl() {
   if (cfg.slipBotUrl && cfg.slipBotUrl.trim()) {
     return cfg.slipBotUrl.trim();
@@ -4048,25 +4102,51 @@ function triggerPaymentAlert(data) {
     window._payToastTimer = setTimeout(() => { banner.style.display = 'none'; }, 9000);
   }
 
-  // 3. Web Speech API (Voice Announcement in Thai) - wait 450ms for chime to finish so they don't overlap!
+  // 3. Web Speech API (Voice Announcement in Thai) - wait 400ms for chime to finish
   if ('speechSynthesis' in window && cfg.sound !== 'off') {
+    try {
+      if (window.speechSynthesis.paused) {
+        window.speechSynthesis.resume();
+      }
+    } catch(e) {}
     window.speechSynthesis.cancel();
+
     setTimeout(() => {
-      window.speechSynthesis.cancel();
-      const cleanAmt = (data.amount || '').replace('บาท', '').trim();
-      const speechText = `ได้รับเงินโอน ${cleanAmt} บาท เรียบร้อยแล้วค่ะ`;
-      const ut = new SpeechSynthesisUtterance(speechText);
-      ut.lang = 'th-TH';
-      ut.rate = 1.0;
-      ut.pitch = 1.0;
-      window.speechSynthesis.speak(ut);
-    }, 450);
+      try {
+        if (window.speechSynthesis.paused) {
+          window.speechSynthesis.resume();
+        }
+        window.speechSynthesis.cancel();
+        const cleanAmt = (data.amount || '').replace('บาท', '').trim();
+        const speechText = `ได้รับเงินโอน ${cleanAmt} บาท เรียบร้อยแล้วค่ะ`;
+        const ut = new SpeechSynthesisUtterance(speechText);
+        ut.lang = 'th-TH';
+        ut.rate = 1.0;
+        ut.pitch = 1.0;
+        ut.volume = 1.0;
+
+        // Try to match Thai voice on iPad
+        if (window.speechSynthesis.getVoices) {
+          const voices = window.speechSynthesis.getVoices();
+          const thVoice = voices.find(v => v.lang && (v.lang.includes('th') || v.lang.includes('TH')));
+          if (thVoice) ut.voice = thVoice;
+        }
+
+        window.speechSynthesis.speak(ut);
+      } catch(e) {
+        console.error('Speech error:', e);
+      }
+    }, 400);
   }
 }
 
 function playPaymentChime() {
   try {
-    const ctx = new (window.AudioContext || window.webkitAudioContext)();
+    const ctx = getAudioContext();
+    if (!ctx) return;
+    if (ctx.state === 'suspended') {
+      ctx.resume().catch(() => {});
+    }
     const now = ctx.currentTime;
     // Crisp 2-note bell: C6 -> G6 (clean and distinct)
     [1046.50, 1567.98].forEach((freq, i) => {
@@ -4074,7 +4154,7 @@ function playPaymentChime() {
       const gain = ctx.createGain();
       osc.type = 'sine';
       osc.frequency.setValueAtTime(freq, now + i * 0.12);
-      gain.gain.setValueAtTime(0.08, now + i * 0.12);
+      gain.gain.setValueAtTime(0.12, now + i * 0.12);
       gain.gain.exponentialRampToValueAtTime(0.001, now + i * 0.12 + 0.28);
       osc.connect(gain);
       gain.connect(ctx.destination);
