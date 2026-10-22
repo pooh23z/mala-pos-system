@@ -4333,7 +4333,7 @@ function playHaptic(type = 'click') {
 /* ─── REAL-TIME SLIP BOT & VOICE BOX INTEGRATION (MULTI-DEVICE) ─── */
 let slipBotSocket = null;
 let slipBotReconnectTimer = null;
-const CLOUDFLARE_WS_URL = "wss://housewares-etc-ata-ada.trycloudflare.com/ws/pos";
+const STATIC_WS_URL = "wss://argue-parmesan-composer.ngrok-free.dev/ws/pos";
 
 // iOS / iPadOS Safari AudioContext & Speech Unlocker
 let globalAudioCtx = null;
@@ -4396,7 +4396,7 @@ function getSlipBotWsUrl() {
   if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
     return 'ws://127.0.0.1:8000/ws/pos';
   }
-  return CLOUDFLARE_WS_URL;
+  return STATIC_WS_URL;
 }
 
 function connectSlipBot() {
